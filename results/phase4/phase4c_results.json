@@ -1,0 +1,82 @@
+{
+  "seed": 20260628,
+  "A3_Keff_packing": {
+    "attack_dirs": [
+      "ctk",
+      "spec",
+      "det_t"
+    ],
+    "attack_signal_subspace_dim_r": 3,
+    "sigma_max": 8.492,
+    "sigma_min_attack": 5.412,
+    "numerical_packing_count_vs_rel_scale": {
+      "0.5": 32,
+      "0.3": 89,
+      "0.2": 188,
+      "0.1": 637
+    },
+    "log_Keff_bound": "~ r*log(sigma/gamma) = 3*log(sigma/gamma)",
+    "verdict": "attack-signal subspace dim r=3 (a handful). Composite penalty log K_eff ~ r*log(sigma/gamma) is a SMALL factor; the two-point sharp N=V(z+z)^2/gamma^2 essentially governs for a realistic finite dictionary. Packing counts (a few hundred at gamma_rel=0.1) match K_eff ~ (1/gamma_rel)^r with small r."
+  },
+  "operational_invisibility": {
+    "budgets": [
+      1000.0,
+      10000.0,
+      100000.0,
+      1000000.0,
+      10000000.0
+    ],
+    "schedule": "echo (real pulse w=2%)",
+    "classification": {
+      "X(amp)": {
+        "margin": 0.17667,
+        "Nstar": 1040.193561743719,
+        "invisible_at_budget": {
+          "1e3": true,
+          "1e4": false,
+          "1e5": false,
+          "1e6": false,
+          "1e7": false
+        }
+      },
+      "Y(phase)": {
+        "margin": 0.00346,
+        "Nstar": 2705543.4540954134,
+        "invisible_at_budget": {
+          "1e3": true,
+          "1e4": true,
+          "1e5": true,
+          "1e6": true,
+          "1e7": false
+        }
+      },
+      "Z(detuning)": {
+        "margin": 0.00283,
+        "Nstar": 4058315.1811431204,
+        "invisible_at_budget": {
+          "1e3": true,
+          "1e4": true,
+          "1e5": true,
+          "1e6": true,
+          "1e7": false
+        }
+      }
+    },
+    "note": "Operational definition: a direction is invisible at a given shot budget iff N* exceeds it. Under the real-pulse echo, Y/Z detuning need ~4e6 shots (invisible at any practical budget); X needs ~1e3. No arbitrary 5% cutoff -- the boundary is the engineer's actual budget."
+  },
+  "spam_robustness": {
+    "Z(detuning)": {
+      "margin_echo": 0.0,
+      "margin_mod": 0.04713,
+      "still_blind_under_echo": true,
+      "exposed_by_mod": true
+    },
+    "X(amp)": {
+      "margin_echo": 0.16976,
+      "margin_mod": 0.16976,
+      "still_blind_under_echo": false,
+      "exposed_by_mod": true
+    },
+    "note": "With 1% depolarizing SPAM: Z stays K-blind under the echo (margin ~0) and is exposed by the control mod; X stays visible. SPAM rescales magnitudes but does not create or move the K=0 kernel -> the control-knob conclusion is SPAM-robust (first order)."
+  }
+}

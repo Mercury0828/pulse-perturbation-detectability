@@ -1,0 +1,100 @@
+{
+  "_K_baseline": 67.88225099390856,
+  "_K_invisible_threshold": 3.394112549695428,
+  "free": {
+    "K_norm": {
+      "X": 67.88225099390856,
+      "Y": 67.88225099390856,
+      "Z": 67.88225099390856
+    },
+    "by_access": {
+      "Z-only": {
+        "X": "visible",
+        "Y": "visible",
+        "Z": "readout-invisible"
+      },
+      "comp+X": {
+        "X": "visible",
+        "Y": "visible",
+        "Z": "visible"
+      },
+      "full": {
+        "X": "visible",
+        "Y": "visible",
+        "Z": "visible"
+      }
+    }
+  },
+  "echo": {
+    "K_norm": {
+      "X": 67.88225099390856,
+      "Y": 1.6764753112225368,
+      "Z": 1.6764753112225368
+    },
+    "by_access": {
+      "Z-only": {
+        "X": "visible",
+        "Y": "K-invisible",
+        "Z": "K-invisible"
+      },
+      "comp+X": {
+        "X": "visible",
+        "Y": "K-invisible",
+        "Z": "K-invisible"
+      },
+      "full": {
+        "X": "visible",
+        "Y": "K-invisible",
+        "Z": "K-invisible"
+      }
+    }
+  },
+  "CPMG2": {
+    "K_norm": {
+      "X": 67.88225099390856,
+      "Y": 7.205186386308324e-34,
+      "Z": 7.205186386308324e-34
+    },
+    "by_access": {
+      "Z-only": {
+        "X": "visible",
+        "Y": "K-invisible",
+        "Z": "K-invisible"
+      },
+      "comp+X": {
+        "X": "visible",
+        "Y": "K-invisible",
+        "Z": "K-invisible"
+      },
+      "full": {
+        "X": "visible",
+        "Y": "K-invisible",
+        "Z": "K-invisible"
+      }
+    }
+  },
+  "XY4": {
+    "K_norm": {
+      "X": 1.8006326323142117,
+      "Y": 1.8006326323142117,
+      "Z": 6.348077150939551e-34
+    },
+    "by_access": {
+      "Z-only": {
+        "X": "K-invisible",
+        "Y": "K-invisible",
+        "Z": "K-invisible"
+      },
+      "comp+X": {
+        "X": "K-invisible",
+        "Y": "K-invisible",
+        "Z": "K-invisible"
+      },
+      "full": {
+        "X": "K-invisible",
+        "Y": "K-invisible",
+        "Z": "K-invisible"
+      }
+    }
+  }
+}

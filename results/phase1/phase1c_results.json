@@ -1,0 +1,73 @@
+{
+  "one_qubit_FF_vs_PDET": [
+    {
+      "direction": "X(amp)",
+      "filter_F0(=||K||^2)": 2.0,
+      "FF_says_sensitive": true,
+      "PDET_margin_full_readout": 0.173,
+      "PDET_visible_full": true,
+      "PDET_margin_Zonly_readout": 0.1,
+      "PDET_visible_Zonly": true,
+      "Nstar_Zonly": 1082.2,
+      "PDET_catches_readout_invisibility_FF_misses": false
+    },
+    {
+      "direction": "Y(phase)",
+      "filter_F0(=||K||^2)": 2.0,
+      "FF_says_sensitive": true,
+      "PDET_margin_full_readout": 0.173,
+      "PDET_visible_full": true,
+      "PDET_margin_Zonly_readout": 0.1,
+      "PDET_visible_Zonly": true,
+      "Nstar_Zonly": 1082.2,
+      "PDET_catches_readout_invisibility_FF_misses": false
+    },
+    {
+      "direction": "Z(detuning)",
+      "filter_F0(=||K||^2)": 2.0,
+      "FF_says_sensitive": true,
+      "PDET_margin_full_readout": 0.141,
+      "PDET_visible_full": true,
+      "PDET_margin_Zonly_readout": 0.0,
+      "PDET_visible_Zonly": false,
+      "Nstar_Zonly": "INF",
+      "PDET_catches_readout_invisibility_FF_misses": true
+    }
+  ],
+  "dd_blindspot_1q": {
+    "F0_symmetric_echo": 0.0,
+    "F0_broken_echo": 0.231,
+    "note": "DD blind spot is K-level: filter function ALSO sees F0=0 at symmetric echo. PDET does not claim this as new; it adds readout-level invisibility + finite-shot."
+  },
+  "dd_blindspot_2q_control_echo": {
+    "per_direction": {
+      "ZI(ctrl detuning)": {
+        "F0_echo": 0.0,
+        "F0_broken": 0.462,
+        "F0_free": 4.0
+      },
+      "ZZ(spectator)": {
+        "F0_echo": 0.0,
+        "F0_broken": 0.462,
+        "F0_free": 4.0
+      },
+      "IX(crosstalk)": {
+        "F0_echo": 4.0,
+        "F0_broken": 4.0,
+        "F0_free": 4.0
+      },
+      "IZ(tgt detuning)": {
+        "F0_echo": 4.0,
+        "F0_broken": 4.0,
+        "F0_free": 4.0
+      }
+    },
+    "note": "Control-echo (pi-X on q0) averages K_ZI AND K_ZZ to 0 (a realistic ZZ spectator coherent error hidden from ALL measurements). Breaking the echo (during-gate control change) exposes them -- a genuine MULTI-QUBIT control-design knob. IX/IZ on the target are unaffected (not echoed)."
+  },
+  "pdet_delta_vs_filter_function": {
+    "K_level_invisibility": "captured by BOTH filter functions and PDET (DD blind spot). NOT a PDET novelty.",
+    "readout_level_invisibility": "K!=0 but invisible under restricted (S,O); PDET catches, filter functions MISS.",
+    "finite_shot_cost": "PDET returns detection shot budget N* (FA/MISS); filter functions give spectral sensitivity.",
+    "unified_workflow": "PDET = kernel over the dictionary under real (S,O) + minimal control/readout augmentation."
+  }
+}

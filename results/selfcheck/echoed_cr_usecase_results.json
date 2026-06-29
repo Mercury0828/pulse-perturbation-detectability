@@ -1,0 +1,39 @@
+{
+  "seed": 20260628,
+  "params": {
+    "T2_us": 120.0,
+    "p_ro": 0.013,
+    "T_ECR_us": 0.6,
+    "V_readout_inflation": 1.0541,
+    "t2_damping": 0.99501
+  },
+  "per_error": {
+    "ZI (control detuning / freq miscal)": {
+      "signal_ECR": 0.0,
+      "signal_single": 0.0,
+      "Nstar_ECR": null,
+      "Nstar_single_diag": null,
+      "blind_under_ECR": true
+    },
+    "IX (target crosstalk)": {
+      "signal_ECR": 1.7371,
+      "signal_single": 1.7228,
+      "Nstar_ECR": 1527.3,
+      "Nstar_single_diag": 1552.9,
+      "blind_under_ECR": false
+    },
+    "ZZ (spectator)": {
+      "signal_ECR": 1.6708,
+      "signal_single": 1.6708,
+      "Nstar_ECR": 1651.0,
+      "Nstar_single_diag": 1651.0,
+      "blind_under_ECR": false
+    }
+  },
+  "gate_fidelity": {
+    "ECR_production": 0.47275,
+    "single_CR_diagnostic": 0.47275,
+    "note": "single-CR diagnostic has lower process fidelity to ZX(pi/2) (ZI/IX retained); used only for commissioning, then revert to ECR."
+  },
+  "verdict": "Non-contrived: ECR is production practice and refocuses ZI (control freq miscalibration). PDET flags ZI as a production blind spot for free; the single-CR diagnostic exposes it at a finite, realistic-noise shot cost, trading diagnostic-gate fidelity. Engineering use case: 'is my ECR hiding a control-frequency error?'"
+}

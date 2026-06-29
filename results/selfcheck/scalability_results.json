@@ -1,0 +1,62 @@
+{
+  "seed": 20260628,
+  "thesis": "locality-scaled K-level diagnosis: O(n) for local dictionary under per-qubit DD",
+  "locality_scaled_kernel": {
+    "n": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "dict_size": [
+      8,
+      13,
+      18,
+      23,
+      28,
+      33
+    ],
+    "kernel_dim": [
+      8,
+      13,
+      18,
+      23,
+      28,
+      33
+    ],
+    "runtime_ms": [
+      32.66,
+      52.02,
+      73.09,
+      97.94,
+      108.75,
+      136.23
+    ]
+  },
+  "scaling_note": "dict size and kernel dim both grow O(n) (3n single-qubit + 2(n-1) NN-2-local); each blind classification is a 1-2 qubit toggling computation INDEPENDENT of n. So the K-level diagnosis for LOCAL perturbations under per-qubit DD is O(n), not O(2^n). Under per-qubit XY4 ALL local perturbations are K-blind (a total local blind spot).",
+  "operator_spreading_boundary": {
+    "1": {
+      "depth": 1,
+      "mean_weight": 1.1666666666666667,
+      "max_weight": 2
+    },
+    "2": {
+      "depth": 2,
+      "mean_weight": 1.5333333333333334,
+      "max_weight": 3
+    },
+    "4": {
+      "depth": 4,
+      "mean_weight": 2.933333333333333,
+      "max_weight": 6
+    },
+    "8": {
+      "depth": 8,
+      "mean_weight": 4.6,
+      "max_weight": 7
+    }
+  },
+  "boundary_note": "Entangling control spreads a local Pauli to high-weight strings: on n=7 the mean weight grows with circuit depth -> beyond a depth the local-dictionary assumption fails. CLAIM = locality-scaled diagnosis (local errors under local/low-depth control), NOT general scalable tomography. This is a stated limitation."
+}

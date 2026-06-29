@@ -1,0 +1,47 @@
+{
+  "protective echo (ideal)": {
+    "margin": 0.0,
+    "Nstar_shadow": null,
+    "MC_validation": {
+      "N_used": 1000000,
+      "FA": 0.0,
+      "FA_ci95": 1.1316065276116666e-06,
+      "MISS": 1.0,
+      "MISS_ci95": 1.1316065276116666e-06
+    }
+  },
+  "protective echo (real pulse w=2%)": {
+    "margin": 0.0028284271247461896,
+    "Nstar_shadow": 4058315.1811431204,
+    "MC_validation": {
+      "N_used": 4058315,
+      "FA": 0.052,
+      "FA_ci95": 0.007945135064931243,
+      "MISS": 0.051333333333333335,
+      "MISS_ci95": 0.007896815613247508
+    }
+  },
+  "knob: broken echo f=0.40": {
+    "margin": 0.028284271247461888,
+    "Nstar_shadow": 40583.151811431235,
+    "MC_validation": {
+      "N_used": 40583,
+      "FA": 0.05433333333333333,
+      "FA_ci95": 0.008111434383816648,
+      "MISS": 0.044,
+      "MISS_ci95": 0.007339233892807432
+    }
+  },
+  "knob: broken echo f=0.33": {
+    "margin": 0.04808326112068523,
+    "Nstar_shadow": 14042.613083540207,
+    "MC_validation": {
+      "N_used": 14042,
+      "FA": 0.05433333333333333,
+      "FA_ci95": 0.008111434383816648,
+      "MISS": 0.044,
+      "MISS_ci95": 0.007339233892807432
+    }
+  },
+  "_baseline_note": "filter-function F0(Z, ideal echo)=0 and Fisher QFI(Z, ideal echo)=0 => both baselines cannot detect the protective-echo blind spot at ANY shot count; MC at 1e6 shots gives MISS~1.0. Only the knob (or a real finite-pulse residual) gives finite cost."
+}

@@ -1,0 +1,45 @@
+{
+  "seed": 20260628,
+  "task": "detect a Z-drift hidden by production XY4 on an idle qubit (K-level blind)",
+  "budget_basis": "total device shots to detect at (5%,5%); same prep/measurement/target",
+  "per_variant_detect_shots": {
+    "xy4": 8947092170538.6,
+    "xy4_drop1": 412.6,
+    "xy4_asym": 9310.4,
+    "echo": 148903.8,
+    "free": 23.3
+  },
+  "methods": {
+    "PDET (classical kernel + minimal-loss knob)": {
+      "device_shots_for_kernel": 0,
+      "exposing_variant": "xy4_asym",
+      "detect_shots": 9310.4,
+      "total_device_shots": 9310.4,
+      "protection_retained_x": 14.7,
+      "note": "kernel is CLASSICAL (computed from the control model, 0 device shots); picks the variant that exposes Z with minimal 1/f-protection loss; spends shots only on that one witness."
+    },
+    "DD/filter-function spectroscopy (blind scan)": {
+      "winner_variant": "xy4_asym",
+      "probe_per_variant": 200,
+      "n_variants_scanned": 5,
+      "total_device_shots": 10110.4,
+      "note": "CAN match PDET's capability but must SCAN the sequence family (no free kernel) -> extra screening shots. Comparable detection power; less efficient."
+    },
+    "Fisher / measurement-optimal experiment design": {
+      "result": "FAIL (QFI=0 under XY4; measurement optimization cannot expose a K-level null)"
+    },
+    "GST / error-generator identifiability": {
+      "result": "FAIL (Z-drift unidentifiable under XY4; needs control variation)"
+    }
+  },
+  "verdict": {
+    "CLEAN STRUCTURAL WIN -- measurement-only methods FAIL on K-level": true,
+    "  Fisher_experiment_design": "FAIL (QFI=0 under XY4: no measurement/probe exposes a K=0 null)",
+    "  GST_error_generator": "FAIL (Z-drift unidentifiable under XY4 without control variation)",
+    "PDET_vs_DD_spectroscopy": "SIBLINGS (same K-level / filter-function physics) -- NO shot-efficiency claim",
+    "  honest_note": "PDET does NOT beat DD/filter-function spectroscopy on shots. If the objective is minimal shots ignoring protection, BOTH pick 'free' (~23 shots, but \u00c3\u20141 protection). If the objective is detect-while-retaining-protection, BOTH need a (classical) filter-function/kernel computation to pick xy4_asym (~9310 shots, \u00c3\u201414.7 protection). They are closely related; DD-spectroscopy is essentially a sibling of PDET's K-level lever.",
+    "PDET_distinct_value": "the UNIFIED restricted-(S,O) kernel framework: per-direction classification of K-level (control-fixable) vs readout-level (measurement-fixable) invisibility, the minimal control-OR-measurement augmentation, and honest finite-shot accounting -- NOT a shot-count superiority over DD-spectroscopy.",
+    "PDET_pick_xy4_asym_total_shots": 9310.4,
+    "DD_scan_illustrative_total": 10110.4
+  }
+}

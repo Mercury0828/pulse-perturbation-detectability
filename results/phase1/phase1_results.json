@@ -1,0 +1,172 @@
+{
+  "seed": 20260628,
+  "twoq": {
+    "free": {
+      "dim_ker_M": 1,
+      "gamma_norm": 1.5470215387104077e-32,
+      "margin_det_c": 6.533207540849938e-17,
+      "M_op": 5.969532895031625,
+      "shot_budget_det_c_direct": Infinity,
+      "shot_budget_det_c_shadow": Infinity,
+      "cfi_per_direction": {
+        "amp_c": 5.759999999999965,
+        "det_c": 4.2682800771818504e-33,
+        "ctk": 29.292454714810543,
+        "spec": 27.551695842740777,
+        "det_t": 27.551695842740777
+      },
+      "names": [
+        "amp_c",
+        "det_c",
+        "ctk",
+        "spec",
+        "det_t"
+      ]
+    },
+    "x90_c": {
+      "dim_ker_M": 0,
+      "gamma_norm": 0.38523347529966695,
+      "margin_det_c": 7.6274167303582745,
+      "M_op": 8.164857709392946,
+      "shot_budget_det_c_direct": 74.40798538714378,
+      "shot_budget_det_c_shadow": 223.22395616143137,
+      "cfi_per_direction": {
+        "amp_c": 7.128866632452244,
+        "det_c": 65.75729259178773,
+        "ctk": 17.810593598730538,
+        "spec": 16.449140094658727,
+        "det_t": 12.695007977118678
+      },
+      "names": [
+        "amp_c",
+        "det_c",
+        "ctk",
+        "spec",
+        "det_t"
+      ]
+    },
+    "y90_c": {
+      "dim_ker_M": 1,
+      "gamma_norm": 6.684574815528612e-16,
+      "margin_det_c": 3.258008546271745e-15,
+      "M_op": 4.873136375235227,
+      "shot_budget_det_c_direct": Infinity,
+      "shot_budget_det_c_shadow": Infinity,
+      "cfi_per_direction": {
+        "amp_c": 11.51999999999994,
+        "det_c": 1.0614619709974683e-29,
+        "ctk": 23.74745813164072,
+        "spec": 21.798847859928934,
+        "det_t": 11.263187151360025
+      },
+      "names": [
+        "amp_c",
+        "det_c",
+        "ctk",
+        "spec",
+        "det_t"
+      ]
+    },
+    "x90_t": {
+      "dim_ker_M": 1,
+      "gamma_norm": 7.994137681950861e-20,
+      "margin_det_c": 1.282242668763509e-16,
+      "M_op": 10.692953815619001,
+      "shot_budget_det_c_direct": Infinity,
+      "shot_budget_det_c_shadow": Infinity,
+      "cfi_per_direction": {
+        "amp_c": 5.759999999999965,
+        "det_c": 1.644146261597766e-32,
+        "ctk": 114.339261302961,
+        "spec": 1.602675309408027,
+        "det_t": 1.6026753094080268
+      },
+      "names": [
+        "amp_c",
+        "det_c",
+        "ctk",
+        "spec",
+        "det_t"
+      ]
+    },
+    "x90_both": {
+      "dim_ker_M": 0,
+      "gamma_norm": 0.11178434384739636,
+      "margin_det_c": 6.851172390080311,
+      "M_op": 8.282726409931486,
+      "shot_budget_det_c_direct": 92.22415938926356,
+      "shot_budget_det_c_shadow": 276.6724781677907,
+      "cfi_per_direction": {
+        "amp_c": 27.441239842454266,
+        "det_c": 48.9076953719439,
+        "ctk": 68.60355678177658,
+        "spec": 1.3370654206290498,
+        "det_t": 17.439474516471876
+      },
+      "names": [
+        "amp_c",
+        "det_c",
+        "ctk",
+        "spec",
+        "det_t"
+      ]
+    }
+  },
+  "montecarlo_det_c": {
+    "free": {
+      "N_tested": 1000000,
+      "predicted_N_star_shadow": null,
+      "FA": 0.4775,
+      "MISS": 0.505
+    },
+    "x90_c": {
+      "N_tested": 446,
+      "predicted_N_star_shadow": 223.22395616143137,
+      "FA": 0.0075,
+      "MISS": 0.01
+    }
+  },
+  "knob_win_2q": {
+    "free_dim_ker": 1,
+    "x90c_dim_ker": 0,
+    "free_margin_det_c": 6.533207540849938e-17,
+    "x90c_margin_det_c": 7.6274167303582745,
+    "free_shotcost_det_c": Infinity,
+    "x90c_shotcost_det_c": 223.22395616143137,
+    "knob_exposes_invisible_attack": true,
+    "real_finite_shot_cost_drops_inf_to_finite": true
+  },
+  "threeq": {
+    "free": {
+      "dim_ker_M": 3,
+      "margin_det_c": 3.8323798172483066e-14,
+      "shotcost_det_c_shadow": Infinity,
+      "names": [
+        "det_c",
+        "ctk",
+        "spec02",
+        "amp_c",
+        "det_t"
+      ]
+    },
+    "x90_c": {
+      "dim_ker_M": 0,
+      "margin_det_c": 1016.1174184342691,
+      "shotcost_det_c_shadow": 0.012577894817524695,
+      "names": [
+        "det_c",
+        "ctk",
+        "spec02",
+        "amp_c",
+        "det_t"
+      ]
+    }
+  },
+  "knob_win_3q": {
+    "free_margin": 3.8323798172483066e-14,
+    "x90c_margin": 1016.1174184342691,
+    "free_dim_ker": 3,
+    "x90c_dim_ker": 0,
+    "cost_inf_to_finite": true
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "seed": 20260628,
+  "access": "FULL single-qubit tomography (6 states x XYZ)",
+  "target": "static Z-detuning",
+  "sweep": [
+    {
+      "pi_frac": "free",
+      "K_Z_norm": 84.8528137423857,
+      "margin": 11.999999999999998,
+      "shot_cost_Nstar": 0.0751539848359837,
+      "Nstar_str": 0.1
+    },
+    {
+      "pi_frac": 0.5,
+      "K_Z_norm": 0.0,
+      "margin": 0.0,
+      "shot_cost_Nstar": null,
+      "Nstar_str": "INF"
+    },
+    {
+      "pi_frac": 0.45,
+      "K_Z_norm": 8.48528137423857,
+      "margin": 1.1999999999999997,
+      "shot_cost_Nstar": 7.515398483598373,
+      "Nstar_str": 7.5
+    },
+    {
+      "pi_frac": 0.4,
+      "K_Z_norm": 16.97056274847714,
+      "margin": 2.3999999999999995,
+      "shot_cost_Nstar": 1.8788496208995933,
+      "Nstar_str": 1.9
+    },
+    {
+      "pi_frac": 0.33,
+      "K_Z_norm": 28.849956672411132,
+      "margin": 4.079999999999998,
+      "shot_cost_Nstar": 0.6501209760898249,
+      "Nstar_str": 0.7
+    },
+    {
+      "pi_frac": 0.25,
+      "K_Z_norm": 42.42640687119285,
+      "margin": 5.999999999999999,
+      "shot_cost_Nstar": 0.3006159393439348,
+      "Nstar_str": 0.3
+    },
+    {
+      "pi_frac": 0.1,
+      "K_Z_norm": 67.88225099390856,
+      "margin": 9.599999999999998,
+      "shot_cost_Nstar": 0.11742810130622458,
+      "Nstar_str": 0.1
+    }
+  ],
+  "decisive": {
+    "echo_symmetric": {
+      "K_Z_norm": 0.0,
+      "margin": 0.0,
+      "Nstar": "INF",
+      "montecarlo_at_1e6_shots": {
+        "FA": 0.0,
+        "MISS": 1.0
+      }
+    },
+    "knob_broken_echo_frac0.33": {
+      "K_Z_norm": 28.849956672411132,
+      "margin": 4.079999999999998,
+      "Nstar": 0.7,
+      "montecarlo_at_Ntest": {
+        "N": 1,
+        "FA": 0.025,
+        "MISS": 0.0275
+      }
+    },
+    "differentiator": "Echo blind spot is invisible to FULL tomography (Nstar=INF; 1e6 shots still random). NO measurement-basis change can fix it (K_Z~0 => zero signal in ALL bases). Only the DURING-GATE schedule change (break echo symmetry) restores K_Z and finite-shot detectability. This is a genuine control-design knob, not a readout-basis change.",
+    "knob_is_control_not_measurement": true
+  }
+}

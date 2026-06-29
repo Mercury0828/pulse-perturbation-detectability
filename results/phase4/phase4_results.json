@@ -1,0 +1,267 @@
+{
+  "seed": 20260628,
+  "nrep": 40,
+  "table1": [
+    [
+      "GST / error generators",
+      "gauge-identifiable error coords",
+      "ker M unidentifiable set (= PDET, P2)",
+      "no",
+      "no",
+      "static, no control/finite-shot layer"
+    ],
+    [
+      "Classical shadows",
+      "expectation estimates + shadow norm",
+      "the estimator PDET uses (A3 V factor)",
+      "partial",
+      "yes",
+      "estimation primitive, not an invisibility map"
+    ],
+    [
+      "Filter-function / DD spectroscopy",
+      "F_V(0)=||K_V||^2, spectral sensitivity",
+      "K-level visibility only",
+      "yes (K-level)",
+      "no",
+      "MISSES readout-level; no detection budget"
+    ],
+    [
+      "Fisher / active experiment design",
+      "QFI/CFI optimal measurement",
+      "fixes readout-level (QFI>0)",
+      "no",
+      "partial",
+      "CANNOT fix K-level (QFI=0 at ker A)"
+    ],
+    [
+      "Channel certification",
+      "access-blind worst-case bound",
+      "whole-channel",
+      "no",
+      "no",
+      "no per-direction restricted-access map"
+    ],
+    [
+      "PDET (this work)",
+      "unified ker M (K-level cap readout-level) under real (S,O)",
+      "the integrated workflow",
+      "yes (ker A knob)",
+      "yes (sharp/up-to-log)",
+      "control- vs measurement-fixable classification + minimal augmentation"
+    ]
+  ],
+  "fig1": {
+    "_K_baseline": 67.88225099390856,
+    "_K_invisible_threshold": 3.394112549695428,
+    "free": {
+      "K_norm": {
+        "X": 67.88225099390856,
+        "Y": 67.88225099390856,
+        "Z": 67.88225099390856
+      },
+      "by_access": {
+        "Z-only": {
+          "X": "visible",
+          "Y": "visible",
+          "Z": "readout-invisible"
+        },
+        "comp+X": {
+          "X": "visible",
+          "Y": "visible",
+          "Z": "visible"
+        },
+        "full": {
+          "X": "visible",
+          "Y": "visible",
+          "Z": "visible"
+        }
+      }
+    },
+    "echo": {
+      "K_norm": {
+        "X": 67.88225099390856,
+        "Y": 1.6764753112225368,
+        "Z": 1.6764753112225368
+      },
+      "by_access": {
+        "Z-only": {
+          "X": "visible",
+          "Y": "K-invisible",
+          "Z": "K-invisible"
+        },
+        "comp+X": {
+          "X": "visible",
+          "Y": "K-invisible",
+          "Z": "K-invisible"
+        },
+        "full": {
+          "X": "visible",
+          "Y": "K-invisible",
+          "Z": "K-invisible"
+        }
+      }
+    },
+    "CPMG2": {
+      "K_norm": {
+        "X": 67.88225099390856,
+        "Y": 7.205186386308324e-34,
+        "Z": 7.205186386308324e-34
+      },
+      "by_access": {
+        "Z-only": {
+          "X": "visible",
+          "Y": "K-invisible",
+          "Z": "K-invisible"
+        },
+        "comp+X": {
+          "X": "visible",
+          "Y": "K-invisible",
+          "Z": "K-invisible"
+        },
+        "full": {
+          "X": "visible",
+          "Y": "K-invisible",
+          "Z": "K-invisible"
+        }
+      }
+    },
+    "XY4": {
+      "K_norm": {
+        "X": 1.8006326323142117,
+        "Y": 1.8006326323142117,
+        "Z": 6.348077150939551e-34
+      },
+      "by_access": {
+        "Z-only": {
+          "X": "K-invisible",
+          "Y": "K-invisible",
+          "Z": "K-invisible"
+        },
+        "comp+X": {
+          "X": "K-invisible",
+          "Y": "K-invisible",
+          "Z": "K-invisible"
+        },
+        "full": {
+          "X": "K-invisible",
+          "Y": "K-invisible",
+          "Z": "K-invisible"
+        }
+      }
+    }
+  },
+  "fig2": {
+    "protective echo (ideal)": {
+      "margin": 0.0,
+      "Nstar_shadow": null,
+      "MC_validation": {
+        "N_used": 1000000,
+        "FA": 0.0,
+        "FA_ci95": 1.1316065276116666e-06,
+        "MISS": 1.0,
+        "MISS_ci95": 1.1316065276116666e-06
+      }
+    },
+    "protective echo (real pulse w=2%)": {
+      "margin": 0.0028284271247461896,
+      "Nstar_shadow": 4058315.1811431204,
+      "MC_validation": {
+        "N_used": 4058315,
+        "FA": 0.052,
+        "FA_ci95": 0.007945135064931243,
+        "MISS": 0.051333333333333335,
+        "MISS_ci95": 0.007896815613247508
+      }
+    },
+    "knob: broken echo f=0.40": {
+      "margin": 0.028284271247461888,
+      "Nstar_shadow": 40583.151811431235,
+      "MC_validation": {
+        "N_used": 40583,
+        "FA": 0.05433333333333333,
+        "FA_ci95": 0.008111434383816648,
+        "MISS": 0.044,
+        "MISS_ci95": 0.007339233892807432
+      }
+    },
+    "knob: broken echo f=0.33": {
+      "margin": 0.04808326112068523,
+      "Nstar_shadow": 14042.613083540207,
+      "MC_validation": {
+        "N_used": 14042,
+        "FA": 0.05433333333333333,
+        "FA_ci95": 0.008111434383816648,
+        "MISS": 0.044,
+        "MISS_ci95": 0.007339233892807432
+      }
+    },
+    "_baseline_note": "filter-function F0(Z, ideal echo)=0 and Fisher QFI(Z, ideal echo)=0 => both baselines cannot detect the protective-echo blind spot at ANY shot count; MC at 1e6 shots gives MISS~1.0. Only the knob (or a real finite-pulse residual) gives finite cost."
+  },
+  "fig3": {
+    "a_gamma_scaling": {
+      "gamma": [
+        0.5,
+        0.3,
+        0.2,
+        0.1,
+        0.05
+      ],
+      "Nstar_pred": [
+        43.288695265526606,
+        120.24637573757391,
+        270.5543454095412,
+        1082.2173816381649,
+        4328.869526552659
+      ],
+      "MC_FA": [
+        0.04225,
+        0.04175,
+        0.04175,
+        0.0415,
+        0.0415
+      ],
+      "MC_FA_ci": [
+        0.0062339815507426715,
+        0.0061986016790079364,
+        0.0061986016790079364,
+        0.006180821231842901,
+        0.006180821231842901
+      ],
+      "MC_MISS": [
+        0.04875,
+        0.0475,
+        0.0475,
+        0.0475,
+        0.0475
+      ],
+      "MC_MISS_ci": [
+        0.006673608422360425,
+        0.006591820499679887,
+        0.006591820499679887,
+        0.006591820499679887,
+        0.006591820499679887
+      ]
+    },
+    "b_logK": {
+      "K": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        64,
+        256
+      ],
+      "Nstar": [
+        13,
+        15,
+        17,
+        20,
+        22,
+        27,
+        29
+      ]
+    }
+  }
+}

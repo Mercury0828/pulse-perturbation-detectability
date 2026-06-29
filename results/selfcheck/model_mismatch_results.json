@@ -1,0 +1,123 @@
+{
+  "seed": 20260628,
+  "a_pulse_timing": {
+    "sweep": [
+      {
+        "timing_error_frac": 0.0,
+        "timing_error_ns": 0.0,
+        "margin_det_blind": 2.2535024757803894,
+        "margin_amp_visible": 348.24947793297105,
+        "suppression_ratio": 154.53698483840006,
+        "dim_kerM": 0
+      },
+      {
+        "timing_error_frac": 0.001,
+        "timing_error_ns": 16.0,
+        "margin_det_blind": 2.2535024757803894,
+        "margin_amp_visible": 348.24947793297105,
+        "suppression_ratio": 154.53698483840006,
+        "dim_kerM": 0
+      },
+      {
+        "timing_error_frac": 0.005,
+        "timing_error_ns": 80.0,
+        "margin_det_blind": 5.50858064070383,
+        "margin_amp_visible": 348.24947793297105,
+        "suppression_ratio": 63.219457179168266,
+        "dim_kerM": 0
+      },
+      {
+        "timing_error_frac": 0.01,
+        "timing_error_ns": 160.0,
+        "margin_det_blind": 8.993154908524284,
+        "margin_amp_visible": 348.24947793297105,
+        "suppression_ratio": 38.72383846105865,
+        "dim_kerM": 0
+      },
+      {
+        "timing_error_frac": 0.02,
+        "timing_error_ns": 320.0,
+        "margin_det_blind": 12.517004314494766,
+        "margin_amp_visible": 348.24947793297105,
+        "suppression_ratio": 27.82211056120641,
+        "dim_kerM": 0
+      },
+      {
+        "timing_error_frac": 0.05,
+        "timing_error_ns": 800.0,
+        "margin_det_blind": 30.243363156447113,
+        "margin_amp_visible": 348.24947793297105,
+        "suppression_ratio": 11.514905803679877,
+        "dim_kerM": 0
+      }
+    ],
+    "note": "With FINITE-WIDTH pulses there is no exact null (dim ker M = 0 throughout): the symmetric echo suppresses the Z-detuning ~155x relative to a visible direction, consistent with the near-ideal-pulse figure of rem:finitepulse. A refocusing-pulse timing error erodes the suppression SMOOTHLY (graceful degradation), from ~155x to ~11x at a 5% timing error, rather than flipping the verdict discontinuously. The operational verdict is the margin / suppression, not a binary blind flag."
+  },
+  "b_drag_coefficient": {
+    "sweep": [
+      {
+        "beta_mismatch_frac": 0.0,
+        "dim_kerM": 0,
+        "margin_leak": 0.010296688117524148,
+        "margin_amp": 0.33596532800734275,
+        "margin_amp_rel_change": 0.0
+      },
+      {
+        "beta_mismatch_frac": 0.01,
+        "dim_kerM": 0,
+        "margin_leak": 0.010297157256318882,
+        "margin_amp": 0.33596530041213063,
+        "margin_amp_rel_change": 8.213708324916517e-08
+      },
+      {
+        "beta_mismatch_frac": 0.05,
+        "dim_kerM": 0,
+        "margin_leak": 0.0102990373112652,
+        "margin_amp": 0.335964993441916,
+        "margin_amp_rel_change": 9.958331972410744e-07
+      },
+      {
+        "beta_mismatch_frac": 0.1,
+        "dim_kerM": 0,
+        "margin_leak": 0.01030139524380258,
+        "margin_amp": 0.3359641674247917,
+        "margin_amp_rel_change": 3.4544712037595403e-06
+      },
+      {
+        "beta_mismatch_frac": 0.2,
+        "dim_kerM": 0,
+        "margin_leak": 0.010306137253664215,
+        "margin_amp": 0.3359610411905925,
+        "margin_amp_rel_change": 1.275969986447326e-05
+      }
+    ],
+    "nominal_dim_kerM": 0,
+    "note": "A DRAG-coefficient mismatch leaves dim ker M unchanged (verdict stable) and moves the visible margins by O(mismatch); the leakage direction, which beta controls, shifts most."
+  },
+  "c_cr_rates": {
+    "sweep": [
+      {
+        "perturbation": "nominal",
+        "dim_kerM_comp": 1,
+        "margin_det_c_comp": 3.2443755667166825e-15,
+        "margin_det_c_rich": 9.234358777165394,
+        "det_c_readout_blind": true
+      },
+      {
+        "perturbation": "crosstalk +20%",
+        "dim_kerM_comp": 1,
+        "margin_det_c_comp": 1.4669327709612637e-15,
+        "margin_det_c_rich": 9.234358777165424,
+        "det_c_readout_blind": true
+      },
+      {
+        "perturbation": "crosstalk -20%",
+        "dim_kerM_comp": 1,
+        "margin_det_c_comp": 1.6750148113812117e-15,
+        "margin_det_c_rich": 9.234358777165314,
+        "det_c_readout_blind": true
+      }
+    ],
+    "note": "A crosstalk-rate mismatch leaves the per-direction verdict unchanged: the control detuning stays readout-blind under computational readout (margin ~ 0) and visible once transverse observables are added, because the obstruction is the measurement basis, not the schedule rate. The calibrated ZX angle g_eff is guarded separately by the gate-fidelity assertion."
+  }
+}

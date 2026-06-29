@@ -1,0 +1,38 @@
+{
+  "free_schedule": [
+    {
+      "direction": "X(amp)",
+      "QFI_max_over_measurements": 4.0,
+      "CFI_full_readout": 12.0,
+      "CFI_Zonly_readout": 4.0,
+      "fisher_design_can_fix": true,
+      "needs": "measurement/probe design (QFI>0: optimal measurement exists)"
+    },
+    {
+      "direction": "Y(phase)",
+      "QFI_max_over_measurements": 4.0,
+      "CFI_full_readout": 12.0,
+      "CFI_Zonly_readout": 4.0,
+      "fisher_design_can_fix": true,
+      "needs": "measurement/probe design (QFI>0: optimal measurement exists)"
+    },
+    {
+      "direction": "Z(detuning)",
+      "QFI_max_over_measurements": 4.0,
+      "CFI_full_readout": 8.0,
+      "CFI_Zonly_readout": 0.0,
+      "fisher_design_can_fix": true,
+      "needs": "measurement/probe design (QFI>0: optimal measurement exists)"
+    }
+  ],
+  "dd_blindspot": {
+    "QFI_Z_symmetric_echo": 0.0,
+    "QFI_Z_broken_echo": 0.462,
+    "verdict": "At the symmetric echo QFI(Z-detuning)=0 over ALL measurements/probes => Fisher/active experiment design CANNOT detect it. Breaking the echo (control knob) restores QFI>0. This is a capability the measurement-optimization baseline provably lacks."
+  },
+  "placement": {
+    "fisher_active_design_handles": "readout-level invisibility (QFI>0): finds the optimal measurement/probe.",
+    "fisher_active_design_cannot_handle": "K-level invisibility / DD blind spot (QFI=0): no measurement helps.",
+    "pdet_adds": "the kernel that classifies each direction (control- vs measurement-fixable) + the control knob for the K-level case + finite-shot detection cost."
+  }
+}

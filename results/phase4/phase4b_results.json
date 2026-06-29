@@ -1,0 +1,86 @@
+{
+  "seed": 20260628,
+  "A_discovery_multiple_testing": {
+    "N": 5000,
+    "alpha": 0.05,
+    "FWER_threshold": 0.05807759729869016,
+    "empirical_FWER_under_null": 0.0555,
+    "kernel_flags_blind_for_free": {
+      "X(amp)": false,
+      "Y(phase)": true,
+      "Z(detuning)": true
+    },
+    "power_under_production_echo": {
+      "X(amp)": 1.0,
+      "Y(phase)": 0.0555,
+      "Z(detuning)": 0.0555
+    },
+    "power_after_PDET_control_mod_f0.33": {
+      "X(amp)": 1.0,
+      "Y(phase)": 0.51125,
+      "Z(detuning)": 0.33775
+    },
+    "note": "Y,Z are K-blind under the echo: power ~ alpha (undetectable) at ANY N; PDET's kernel flags them for free, and the minimal control mod (break echo) restores power ->1. X stays detectable throughout. FWER controlled at alpha across the K-direction scan."
+  },
+  "B_equal_budget_vs_tomography": {
+    "N": [
+      1000,
+      10000,
+      100000,
+      1000000
+    ],
+    "tomography_under_echo_power": [
+      0.048,
+      0.048,
+      0.048,
+      0.048
+    ],
+    "PDET_kernel+mod_power": [
+      0.144,
+      0.784,
+      1.0,
+      1.0
+    ],
+    "note": "Target = Z-detuning, K-blind under the production echo. Tomography/estimation under the SAME echo has ~zero power at every budget (the direction is in the kernel). PDET computes the kernel for free, flags Z as blind, and prescribes the minimal control mod that exposes it -> power->1. Equal-budget point: PDET's advantage is the kernel guidance, not estimation power."
+  },
+  "C_protection_detectability_tradeoff": {
+    "sweep": [
+      {
+        "f": 0.5,
+        "detectability(margin)": 0.0,
+        "protection_retained": 1.0
+      },
+      {
+        "f": 0.45,
+        "detectability(margin)": 0.0141,
+        "protection_retained": 0.9
+      },
+      {
+        "f": 0.4,
+        "detectability(margin)": 0.0283,
+        "protection_retained": 0.8
+      },
+      {
+        "f": 0.35,
+        "detectability(margin)": 0.0424,
+        "protection_retained": 0.7
+      },
+      {
+        "f": 0.3,
+        "detectability(margin)": 0.0566,
+        "protection_retained": 0.6
+      },
+      {
+        "f": 0.2,
+        "detectability(margin)": 0.0849,
+        "protection_retained": 0.4
+      },
+      {
+        "f": 0.1,
+        "detectability(margin)": 0.1131,
+        "protection_retained": 0.2
+      }
+    ],
+    "note": "Pareto: f=0.5 max protection / zero detectability; moving off-center trades protection for detectability. The engineer picks the operating point."
+  }
+}

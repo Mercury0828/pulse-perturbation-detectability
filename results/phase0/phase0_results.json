@@ -1,0 +1,922 @@
+{
+  "seed": 20260628,
+  "thresholds": {
+    "gamma_min_norm": 0.02,
+    "f_knob": 2.0,
+    "eta2_vis": 1e-06,
+    "rtol": 1e-09
+  },
+  "transmon_1q": {
+    "idle": {
+      "Z": {
+        "label": "1q-idle-Z",
+        "a1_max_rel": 9.6395672184811e-10,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          4,
+          5
+        ],
+        "sing_spectrum": [
+          0.2816241129007849,
+          0.2199114857512854,
+          0.0,
+          0.0
+        ],
+        "M_op": 0.2816241129007849,
+        "dim_ker_M": 3,
+        "gamma": 0.0,
+        "gamma_norm": 0.0,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.2199114857512854,
+          0.0,
+          0.0
+        ],
+        "kernel_eta2": [
+          {
+            "eta2": 8.014116753512846e-05,
+            "second_order_visible": true
+          },
+          {
+            "eta2": 7.02259935261438e-07,
+            "second_order_visible": false
+          },
+          {
+            "eta2": 8.440616121040728e-09,
+            "second_order_visible": false
+          }
+        ]
+      },
+      "ZX": {
+        "label": "1q-idle-ZX",
+        "a1_max_rel": 9.223256859267019e-10,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          8,
+          5
+        ],
+        "sing_spectrum": [
+          0.2855200951712752,
+          0.28073214157845666,
+          0.127037721284393,
+          0.009863959354465308,
+          2.355679283495676e-17
+        ],
+        "M_op": 0.2855200951712752,
+        "dim_ker_M": 1,
+        "gamma": 1.3349261459035146e-17,
+        "gamma_norm": 4.675419238364735e-17,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.28439570598891417,
+          0.009871933090414729,
+          1.3349261459035146e-17
+        ],
+        "kernel_eta2": [
+          {
+            "eta2": 9.731362048946789e-06,
+            "second_order_visible": true
+          }
+        ]
+      },
+      "rich": {
+        "label": "1q-idle-rich",
+        "a1_max_rel": 9.223256859267019e-10,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          16,
+          5
+        ],
+        "sing_spectrum": [
+          0.3640365700350492,
+          0.284555650751481,
+          0.17955721252292386,
+          0.01075520737867047,
+          0.0009755149036517088
+        ],
+        "M_op": 0.3640365700350492,
+        "dim_ker_M": 0,
+        "gamma": 0.001248145004743586,
+        "gamma_norm": 0.00342862532910749,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.28453216082647037,
+          0.010756651246391287,
+          0.001248145004743586
+        ],
+        "kernel_eta2": []
+      }
+    },
+    "drag": {
+      "Z": {
+        "label": "1q-drag-Z",
+        "a1_max_rel": 7.851562207954039e-09,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          4,
+          5
+        ],
+        "sing_spectrum": [
+          0.398266442771825,
+          0.1875157615967361,
+          3.58309339744786e-05,
+          1.3587945832047013e-06
+        ],
+        "M_op": 0.398266442771825,
+        "dim_ker_M": 1,
+        "gamma": 2.2284394293409798e-17,
+        "gamma_norm": 5.595348214204663e-17,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          3.5843461786624993e-05,
+          1.7432229177401756e-06,
+          2.2284394293409798e-17
+        ],
+        "kernel_eta2": [
+          {
+            "eta2": 6.502178265128428e-06,
+            "second_order_visible": true
+          }
+        ]
+      },
+      "ZX": {
+        "label": "1q-drag-ZX",
+        "a1_max_rel": 7.851562207954039e-09,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          8,
+          5
+        ],
+        "sing_spectrum": [
+          0.39832097610468864,
+          0.21645386535662317,
+          0.15373258742240498,
+          0.006725686169394979,
+          0.00011792788329554625
+        ],
+        "M_op": 0.39832097610468864,
+        "dim_ker_M": 0,
+        "gamma": 0.00015101618844043813,
+        "gamma_norm": 0.00037913189989960996,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.17731445339834304,
+          0.006732128086036418,
+          0.00015101618844043813
+        ],
+        "kernel_eta2": []
+      },
+      "rich": {
+        "label": "1q-drag-rich",
+        "a1_max_rel": 7.851562207954039e-09,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          16,
+          5
+        ],
+        "sing_spectrum": [
+          0.43029716888068004,
+          0.21649662073627443,
+          0.18911575061566496,
+          0.007548603406981305,
+          0.0006585046041882553
+        ],
+        "M_op": 0.43029716888068004,
+        "dim_ker_M": 0,
+        "gamma": 0.0008432798259802816,
+        "gamma_norm": 0.0019597615019728803,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.2019836846513521,
+          0.007553226067154109,
+          0.0008432798259802816
+        ],
+        "kernel_eta2": []
+      }
+    },
+    "echo": {
+      "Z": {
+        "label": "1q-echo-Z",
+        "a1_max_rel": 7.727411997342418e-08,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          4,
+          5
+        ],
+        "sing_spectrum": [
+          0.05512289639707456,
+          0.0400434761216276,
+          0.0037811983903171327,
+          0.0012892776063089337
+        ],
+        "M_op": 0.05512289639707456,
+        "dim_ker_M": 1,
+        "gamma": 2.95893460928093e-17,
+        "gamma_norm": 5.367886672656611e-16,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.006803637057569646,
+          0.0013829857555384697,
+          2.95893460928093e-17
+        ],
+        "kernel_eta2": [
+          {
+            "eta2": 0.0024019589422799,
+            "second_order_visible": true
+          }
+        ]
+      },
+      "ZX": {
+        "label": "1q-echo-ZX",
+        "a1_max_rel": 9.504839463815412e-08,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          8,
+          5
+        ],
+        "sing_spectrum": [
+          0.1346541833555254,
+          0.060432157335255594,
+          0.04040689472621399,
+          0.007411870378683809,
+          0.003736629995455069
+        ],
+        "M_op": 0.1346541833555254,
+        "dim_ker_M": 0,
+        "gamma": 0.005490442511722386,
+        "gamma_norm": 0.04077439240952517,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.06471488083803988,
+          0.007904420386817376,
+          0.005490442511722386
+        ],
+        "kernel_eta2": []
+      },
+      "rich": {
+        "label": "1q-echo-rich",
+        "a1_max_rel": 1.0055516751283076e-07,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          16,
+          5
+        ],
+        "sing_spectrum": [
+          0.21628208366950405,
+          0.12120709229416804,
+          0.0572125244488257,
+          0.02042113976249008,
+          0.009440101376007672
+        ],
+        "M_op": 0.21628208366950405,
+        "dim_ker_M": 0,
+        "gamma": 0.00957810643265547,
+        "gamma_norm": 0.04428525132618716,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.09452845334922785,
+          0.02744906773591074,
+          0.00957810643265547
+        ],
+        "kernel_eta2": []
+      }
+    },
+    "cpmg2": {
+      "Z": {
+        "label": "1q-cpmg2-Z",
+        "a1_max_rel": 1.1436622930291335e-07,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          4,
+          5
+        ],
+        "sing_spectrum": [
+          0.13028995081429884,
+          0.08905715992468063,
+          0.018081441628208367,
+          0.0005231717667230002
+        ],
+        "M_op": 0.13028995081429884,
+        "dim_ker_M": 1,
+        "gamma": 6.351463648259255e-18,
+        "gamma_norm": 4.874868405861856e-17,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.07765326920526526,
+          0.000545300747620394,
+          6.351463648259255e-18
+        ],
+        "kernel_eta2": [
+          {
+            "eta2": 0.00011254869842792921,
+            "second_order_visible": true
+          }
+        ]
+      },
+      "ZX": {
+        "label": "1q-cpmg2-ZX",
+        "a1_max_rel": 8.357075103888919e-08,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          8,
+          5
+        ],
+        "sing_spectrum": [
+          0.18809278668303717,
+          0.09564050982904634,
+          0.03755931973449054,
+          0.0025885665174339837,
+          0.0007876852431892764
+        ],
+        "M_op": 0.18809278668303717,
+        "dim_ker_M": 0,
+        "gamma": 0.0009961232672601205,
+        "gamma_norm": 0.005295914239065017,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.09571816087446883,
+          0.0026055413431402344,
+          0.0009961232672601205
+        ],
+        "kernel_eta2": []
+      },
+      "rich": {
+        "label": "1q-cpmg2-rich",
+        "a1_max_rel": 6.192009889511517e-08,
+        "n_directions": 5,
+        "dir_names": [
+          "amp",
+          "det",
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "M_shape": [
+          16,
+          5
+        ],
+        "sing_spectrum": [
+          0.21609006785203072,
+          0.10367565834999279,
+          0.06904931133278915,
+          0.007970092145205825,
+          0.003220473876890088
+        ],
+        "M_op": 0.21609006785203072,
+        "dim_ker_M": 0,
+        "gamma": 0.003971900447919244,
+        "gamma_norm": 0.01838076357419173,
+        "benign": [
+          "det",
+          "amp"
+        ],
+        "attack_cols": [
+          "phase",
+          "leak",
+          "wd"
+        ],
+        "gamma_attack_spectrum": [
+          0.10619385772576036,
+          0.008255107329443985,
+          0.003971900447919244
+        ],
+        "kernel_eta2": []
+      }
+    }
+  },
+  "control_knob_1q": {
+    "Z": {
+      "base_dim_ker": 3,
+      "base_gamma_norm": 0.0,
+      "augmentations": {
+        "drag": {
+          "dim_ker_shrink": 2,
+          "gamma_ratio": 55.953482142046624,
+          "a_dim_ker": 1,
+          "a_gamma_norm": 5.595348214204663e-17,
+          "passes_knob": true
+        },
+        "echo": {
+          "dim_ker_shrink": 2,
+          "gamma_ratio": 536.788667265661,
+          "a_dim_ker": 1,
+          "a_gamma_norm": 5.367886672656611e-16,
+          "passes_knob": true
+        },
+        "cpmg2": {
+          "dim_ker_shrink": 2,
+          "gamma_ratio": 48.74868405861855,
+          "a_dim_ker": 1,
+          "a_gamma_norm": 4.874868405861856e-17,
+          "passes_knob": true
+        }
+      }
+    },
+    "ZX": {
+      "base_dim_ker": 1,
+      "base_gamma_norm": 4.675419238364735e-17,
+      "augmentations": {
+        "drag": {
+          "dim_ker_shrink": 1,
+          "gamma_ratio": 7939238022365.5,
+          "a_dim_ker": 0,
+          "a_gamma_norm": 0.00037913189989960996,
+          "passes_knob": true
+        },
+        "echo": {
+          "dim_ker_shrink": 1,
+          "gamma_ratio": 853839011284121.4,
+          "a_dim_ker": 0,
+          "a_gamma_norm": 0.04077439240952517,
+          "passes_knob": true
+        },
+        "cpmg2": {
+          "dim_ker_shrink": 1,
+          "gamma_ratio": 110899461905223.58,
+          "a_dim_ker": 0,
+          "a_gamma_norm": 0.005295914239065017,
+          "passes_knob": true
+        }
+      }
+    },
+    "rich": {
+      "base_dim_ker": 0,
+      "base_gamma_norm": 0.00342862532910749,
+      "augmentations": {
+        "drag": {
+          "dim_ker_shrink": 0,
+          "gamma_ratio": 0.5715881188111702,
+          "a_dim_ker": 0,
+          "a_gamma_norm": 0.0019597615019728803,
+          "passes_knob": false
+        },
+        "echo": {
+          "dim_ker_shrink": 0,
+          "gamma_ratio": 12.916328579336225,
+          "a_dim_ker": 0,
+          "a_gamma_norm": 0.04428525132618716,
+          "passes_knob": true
+        },
+        "cpmg2": {
+          "dim_ker_shrink": 0,
+          "gamma_ratio": 5.360971762690806,
+          "a_dim_ker": 0,
+          "a_gamma_norm": 0.01838076357419173,
+          "passes_knob": true
+        }
+      }
+    }
+  },
+  "finite_shot_1q": {
+    "N_grid": [
+      100,
+      1000,
+      10000,
+      100000
+    ],
+    "direct": {
+      "FA": [
+        0.425,
+        0.4,
+        0.275,
+        0.025
+      ],
+      "MISS": [
+        0.4,
+        0.45,
+        0.225,
+        0.025
+      ],
+      "margin": 0.01226839463811243
+    },
+    "shadow_3x": {
+      "FA": [
+        0.45,
+        0.425,
+        0.425,
+        0.125
+      ],
+      "MISS": [
+        0.4,
+        0.45,
+        0.3,
+        0.05
+      ],
+      "margin": 0.01226839463811243
+    },
+    "worst_visible_dir": {
+      "amp": -3.849765992103289e-12,
+      "det": 6.349563237748918e-13,
+      "phase": -0.18977385626364307,
+      "leak": -0.03920192383083015,
+      "wd": -0.9810448983847712
+    }
+  },
+  "cr_2q": {
+    "free": {
+      "label": "2q-free-restricted",
+      "a1_max_rel": 6.374957781670232e-09,
+      "n_directions": 5,
+      "dir_names": [
+        "amp_c",
+        "det_c",
+        "ctk",
+        "spec",
+        "det_t"
+      ],
+      "M_shape": [
+        45,
+        5
+      ],
+      "sing_spectrum": [
+        8.491596971660892,
+        6.17248444646421,
+        5.412250429794481,
+        4.156921938165293,
+        3.24675805056885e-15
+      ],
+      "M_op": 8.491596971660892,
+      "dim_ker_M": 1,
+      "gamma": 5.41225042979448,
+      "gamma_norm": 0.6373654387810499,
+      "benign": [
+        "amp_c",
+        "det_c"
+      ],
+      "attack_cols": [
+        "ctk",
+        "spec",
+        "det_t"
+      ],
+      "gamma_attack_spectrum": [
+        8.491596971660893,
+        6.17248444646421,
+        5.41225042979448
+      ]
+    },
+    "echo": {
+      "label": "2q-echo-restricted",
+      "a1_max_rel": 6.138394605303676e-09,
+      "n_directions": 5,
+      "dir_names": [
+        "amp_c",
+        "det_c",
+        "ctk",
+        "spec",
+        "det_t"
+      ],
+      "M_shape": [
+        45,
+        5
+      ],
+      "sing_spectrum": [
+        8.491596971660885,
+        6.172484446464205,
+        5.448332099326435,
+        4.2004435757987375,
+        3.0524152673108095e-15
+      ],
+      "M_op": 8.491596971660885,
+      "dim_ker_M": 1,
+      "gamma": 5.448332099326436,
+      "gamma_norm": 0.6416145417062565,
+      "benign": [
+        "amp_c",
+        "det_c"
+      ],
+      "attack_cols": [
+        "ctk",
+        "spec",
+        "det_t"
+      ],
+      "gamma_attack_spectrum": [
+        8.491596971660886,
+        6.172484446464206,
+        5.448332099326436
+      ]
+    }
+  },
+  "operator_spreading_2q": {
+    "free": {
+      "amp_c": {
+        "0": 0.0,
+        "1": 5.166622741300397e-30,
+        "2": 1.0
+      },
+      "det_c": {
+        "0": 1.7487789252486436e-29,
+        "1": 1.0,
+        "2": 3.2262093763339994e-37
+      },
+      "ctk": {
+        "0": 3.226209077160639e-37,
+        "1": 1.0,
+        "2": 1.7487789252487764e-29
+      },
+      "spec": {
+        "0": 0.0,
+        "1": 0.9779951100244507,
+        "2": 0.022004889975549193
+      },
+      "det_t": {
+        "0": 0.0,
+        "1": 0.022004889975549193,
+        "2": 0.9779951100244507
+      }
+    },
+    "echo": {
+      "amp_c": {
+        "0": 0.0,
+        "1": 4.7104713700933675e-08,
+        "2": 0.9999999528952863
+      },
+      "det_c": {
+        "0": 1.8242844540269163e-29,
+        "1": 1.0,
+        "2": 1.0205476121709634e-36
+      },
+      "ctk": {
+        "0": 1.0205475826485715e-36,
+        "1": 1.0,
+        "2": 1.8242844540270474e-29
+      },
+      "spec": {
+        "0": 0.0,
+        "1": 0.9779951100244509,
+        "2": 0.022004889975549145
+      },
+      "det_t": {
+        "0": 0.0,
+        "1": 0.022004889975549145,
+        "2": 0.9779951100244509
+      }
+    }
+  },
+  "control_knob_2q": {
+    "echo": {
+      "dim_ker_shrink": 0,
+      "gamma_ratio": 1.0066666666666662,
+      "passes_knob": false
+    }
+  },
+  "stim_spreading": {
+    "2": {
+      "mean_weight": 1.3,
+      "max_weight": 2
+    },
+    "3": {
+      "mean_weight": 1.65,
+      "max_weight": 3
+    },
+    "4": {
+      "mean_weight": 1.95,
+      "max_weight": 4
+    },
+    "5": {
+      "mean_weight": 2.85,
+      "max_weight": 4
+    }
+  },
+  "baselines": {
+    "access": "Z-only",
+    "schedule": "1q-drag",
+    "dir_names": [
+      "amp",
+      "det",
+      "phase",
+      "leak",
+      "wd"
+    ],
+    "pdet_dim_ker": 1,
+    "jacobian_dim_null": 1,
+    "pdet_M_vs_finite_diff_Jacobian_maxabs": 9.746021620760017e-10,
+    "gst_identifiable_rank": 4,
+    "gst_unidentifiable_dim": 1,
+    "hamiltonian_learning_recovery_err": {
+      "amp": 0.12089086274107232,
+      "det": 0.6954926367517826,
+      "phase": 0.6953502003234412,
+      "leak": 0.004609928686387272,
+      "wd": 0.1346931289906534
+    },
+    "qfi_per_direction": {
+      "amp": 0.09669371324240068,
+      "det": 0.017602202837277786,
+      "phase": 0.017580282635189494,
+      "leak": 1.8186312378144996e-05,
+      "wd": 0.06188393654378337
+    },
+    "channel_certification": {
+      "output": "worst-case whole-channel distinguishability bound (access-blind)",
+      "per_direction_visibility": false,
+      "actionable_control_change": false
+    },
+    "equivalence_rubric": {
+      "visibility_map_reproducible_by_jacobian": true,
+      "visibility_map_beyond_baseline": false,
+      "baseline_produces_actionable_control_change": false,
+      "pdet_produces_actionable_control_change": true,
+      "engineering_delta_is_the_control_knob_plus_finite_shot": true,
+      "rubric_verdict": "PASS",
+      "note": "PDET's visibility MAP is the observable-Jacobian nullspace (NOT novel -- a known tool, honesty anchor N0). The delta that survives the rubric is the CONTROL-DESIGN KNOB (shrink ker M / raise gamma by changing U0(t)) + honest finite-shot, which no listed baseline directly outputs."
+    }
+  },
+  "go_no_go": {
+    "criteria": {
+      "ker_nontrivial_realistic_access": {
+        "pass": true,
+        "detail": "Z-only dim ker M: idle=3, drag=1, m=5 (0<idle<m => nontrivial)"
+      },
+      "control_knob_passes": {
+        "pass": true,
+        "detail": "max kernel-shrink=2 (1q idle->control); 2q-echo inert=True. NB Z-only gamma-ratio degenerate (base~0): kernel-shrink is the load-bearing evidence."
+      },
+      "gamma_ge_gamma_min_for_exposed_direction": {
+        "pass": true,
+        "detail": "best gamma_norm achieved (any schedule/access)=0.044 vs gamma_min=0.02. Worst-case fully-invisible directions keep gamma=0 (that IS the characterized kernel, not vacuity)."
+      },
+      "eta2_first_second_order_honesty": {
+        "pass": true,
+        "detail": "kernel directions classified by eta2 (some 2nd-order visible, some not); NO all-order claim."
+      },
+      "equivalence_rubric": {
+        "verdict": "PASS",
+        "visibility_map_beyond_baseline": false,
+        "detail": "PDET's visibility MAP is the observable-Jacobian nullspace (NOT novel -- a known tool, honesty anchor N0). The delta that survives the rubric is the CONTROL-DESIGN KNOB (shrink ker M / raise gamma by changing U0(t)) + honest finite-shot, which no listed baseline directly outputs."
+      },
+      "operator_spreading_scalability_caveat": {
+        "spreading_grows_with_n": true,
+        "detail": "stim mean Pauli weight n2->n5: 1.3->2.85; scalable finite-shot claim needs an explicit bounded-operator-growth assumption (YELLOW(c) for scalable regime)."
+      }
+    },
+    "overall": "GO (conditional)",
+    "go_conditional": true,
+    "summary": "Engineering story ALIVE but the delta is NARROWER than the full-workflow framing: the visibility MAP is the observable-Jacobian/observability-rank tool (NOT novel); the genuine, rubric-surviving delta is the CONTROL-DESIGN KNOB (shrinks ker M / raises gamma by changing U0(t)) + honest finite-shot. 1q knob works (kernel 3->1 under Z-only); 2q-echo knob inert here; operator spreading real => scalable regime needs bounded-growth caveat. Recommend GO conditional on honest scoping (lead with the control knob + finite-shot; frame the map as a known tool), a human-gate scope call.",
+    "honesty": "numerics are de-risk evidence, not a proof. Worst-case inputs only."
+  }
+}

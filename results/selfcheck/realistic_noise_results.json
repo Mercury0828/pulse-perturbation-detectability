@@ -1,0 +1,68 @@
+{
+  "seed": 20260628,
+  "params": {
+    "T1_us": 200.0,
+    "T2_us": 120.0,
+    "p_readout": 0.013
+  },
+  "preregistered": "see module docstring (expectation + falsifier frozen before run)",
+  "sweep": {
+    "T_seq_us": [
+      2.0,
+      5.0,
+      10.0,
+      20.0,
+      40.0
+    ],
+    "echo_signal_norm": [
+      3.5568591826324597e-06,
+      2.1896418787390225e-05,
+      8.541331221968049e-05,
+      0.00032504764981935004,
+      0.0011786785006787715
+    ],
+    "broken_signal_norm": [
+      0.68842315915565,
+      1.6785392289510621,
+      3.219989791925649,
+      5.9247382535480355,
+      10.02912871057736
+    ],
+    "free_signal_norm": [
+      1.9669415963482284,
+      4.795927302456975,
+      9.200290806324137,
+      16.928505878085044,
+      28.653610033722188
+    ],
+    "echo_Nstar_open": [
+      360680978481739.2,
+      9517226408876.334,
+      625468518418.9395,
+      43187943231.33513,
+      3284474228.228927
+    ],
+    "broken_Nstar_open": [
+      9628.211873986167,
+      1619.547132123871,
+      440.09617368589204,
+      129.9924847816302,
+      45.3659670071204
+    ],
+    "free_Nstar_open": [
+      1179.4340264769294,
+      198.38617303850864,
+      53.908031400697965,
+      15.922795784578808,
+      5.557735707652944
+    ]
+  },
+  "verdict": {
+    "(i) K-blind-spot persists under T1/T2": true,
+    "(ii) visible direction survives (margin not collapsed)": true,
+    "(ii) T2 damping free-signal(40us)/free-signal(2us)": 14.568,
+    "(iii) knob still finite-shot-detectable < 1e6 shots": true,
+    "V_readout_inflation_factor": 1.0541,
+    "summary": "PASS if all three hold: echo K-blind under noise; free/broken visible with finite (readout-inflated) N*; T2 damps but does not kill the signal at us-scale. Falsifier = a first-order signal appearing at the echo (decoherence creating coherent detectability)."
+  }
+}

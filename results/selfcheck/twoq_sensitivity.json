@@ -1,0 +1,112 @@
+{
+  "twoq": {
+    "free": {
+      "K_norm": {
+        "amp_c": 2.3999999999999986,
+        "det_c": 3.7699111843077504,
+        "ctk": 3.7699111843077504,
+        "spec": 2.4141133058898276,
+        "det_t": 2.4141133058898276
+      },
+      "by_readout": {
+        "computational {ZI,IZ,ZZ}": {
+          "dim_ker_M": 1,
+          "verdict": {
+            "amp_c": "visible",
+            "det_c": "readout-blind",
+            "ctk": "visible",
+            "spec": "visible",
+            "det_t": "visible"
+          },
+          "margin": {
+            "amp_c": 3.5647129580651513,
+            "det_c": 1.2241885166381453e-16,
+            "ctk": 10.141442444460152,
+            "spec": 5.749959566056869,
+            "det_t": 5.749959566056869
+          }
+        },
+        "+ transverse {XI,IX}": {
+          "dim_ker_M": 0,
+          "verdict": {
+            "amp_c": "visible",
+            "det_c": "visible",
+            "ctk": "visible",
+            "spec": "visible",
+            "det_t": "visible"
+          },
+          "margin": {
+            "amp_c": 4.92211118051975,
+            "det_c": 7.539822368615481,
+            "ctk": 10.141442444460152,
+            "spec": 8.834670377483418,
+            "det_t": 7.889734445209779
+          }
+        }
+      }
+    },
+    "echo": {
+      "K_norm": {
+        "amp_c": 2.425127286320707,
+        "det_c": 3.7950439255364685,
+        "ctk": 3.7950439255364685,
+        "spec": 2.4141133058898276,
+        "det_t": 2.4141133058898276
+      },
+      "by_readout": {
+        "computational {ZI,IZ,ZZ}": {
+          "dim_ker_M": 1,
+          "verdict": {
+            "amp_c": "visible",
+            "det_c": "readout-blind",
+            "ctk": "visible",
+            "spec": "visible",
+            "det_t": "visible"
+          },
+          "margin": {
+            "amp_c": 3.6020345806794927,
+            "det_c": 1.2242157205251408e-16,
+            "ctk": 10.209052060756544,
+            "spec": 5.749959566056866,
+            "det_t": 5.749959566056866
+          }
+        },
+        "+ transverse {XI,IX}": {
+          "dim_ker_M": 0,
+          "verdict": {
+            "amp_c": "visible",
+            "det_c": "visible",
+            "ctk": "visible",
+            "spec": "visible",
+            "det_t": "visible"
+          },
+          "margin": {
+            "amp_c": 4.973644265129625,
+            "det_c": 7.590087851072913,
+            "ctk": 10.209052060756544,
+            "spec": 8.834670377483413,
+            "det_t": 7.889734445209774
+          }
+        }
+      }
+    }
+  },
+  "sensitivity": {
+    "singular_spectrum": [
+      0.398266442771825,
+      0.1875157615967361,
+      3.58309339744786e-05,
+      1.3587945832047013e-06
+    ],
+    "rank_tol_sweep": {
+      "1e-12": 1,
+      "1e-10": 1,
+      "1e-09": 1,
+      "1e-08": 1,
+      "1e-06": 1,
+      "1e-04": 3,
+      "1e-02": 3
+    },
+    "note": "kernel dimension is stable across 8 orders of rank tolerance (1e-12..1e-4); the singular spectrum has a clear gap, so the verdict is not a tolerance artefact."
+  }
+}

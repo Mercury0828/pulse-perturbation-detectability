@@ -1,0 +1,43 @@
+{
+  "seed": 20260628,
+  "params": {
+    "T1_us": 200.0,
+    "T2_us": 120.0,
+    "p_ro": 0.013,
+    "T_seq_us": 16.0,
+    "V_ro": 1.0541
+  },
+  "per_schedule": {
+    "free": {
+      "Zdrift_signal_fulltomo": 14.00218,
+      "Nstar": 23.3,
+      "protection_1overf_vs_free": 1.0,
+      "blind": false
+    },
+    "xy4": {
+      "Zdrift_signal_fulltomo": 2e-05,
+      "Nstar": 8947092164946.7,
+      "protection_1overf_vs_free": 15.76,
+      "blind": true
+    },
+    "xy4_drop1": {
+      "Zdrift_signal_fulltomo": 3.32549,
+      "Nstar": 412.6,
+      "protection_1overf_vs_free": 6.84,
+      "blind": false
+    },
+    "xy4_asym": {
+      "Zdrift_signal_fulltomo": 0.70007,
+      "Nstar": 9310.4,
+      "protection_1overf_vs_free": 14.7,
+      "blind": false
+    }
+  },
+  "verdict": {
+    "Z_blind_under_XY4_fulltomo": true,
+    "exposed_by_modified_DD": true,
+    "XY4_1overf_protection_vs_free": 15.76,
+    "protection_lost_by_knob_xy4_to_asym": 1.06,
+    "summary": "GENUINE K-level non-contrived case: XY4 (production memory DD) makes a Z-drift blind to FULL tomography (control-fixable, NOT readout-fixable); modifying the DD exposes it at finite N* under realistic noise, trading 1/f-noise protection (DD suppresses correlated noise; it does NOT help vs Markovian T1/T2, which is why detection N* uses the Lindblad model and protection uses the 1/f filter function). PDET's classical kernel flags the blind direction for free."
+  }
+}
