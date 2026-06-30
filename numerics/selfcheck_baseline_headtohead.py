@@ -5,7 +5,7 @@ Task: detect a coherent Z-drift on an idle qubit that production XY4 dynamical d
 (blind to FULL single-qubit tomography). Same prep/measurement restriction, same target, same (5%,5%) error;
 compare TOTAL DEVICE SHOTS to first detection across named methods.
 
-Honest expected outcome (Codex hostile reviewer's own prediction): PDET is NOT superior in raw detection power;
+Honest expected outcome (pre-registered prediction): PDET is NOT superior in raw detection power;
 measurement-only methods FAIL on a K-level null (QFI=0 / unidentifiable), DD-spectroscopy CAN match PDET but must
 SCAN sequence space (blind search), while PDET's classical kernel (0 device shots) picks the minimal exposing
 variant directly. So PDET's value = fast nullspace diagnosis + knob proposal + efficiency (avoids the scan), not

@@ -1,6 +1,6 @@
 """
 PDET Phase-0 baseline battery (functional minimal, 1-2 qubit) for the GST+shadows EQUIVALENCE RUBRIC (the RED
-test, phase0_spec.md §5/§6). Implements the practitioner pipeline the Codex second opinion said PDET must beat:
+test, phase0_spec.md §5/§6). Implements the practitioner pipeline PDET must beat (GST+shadows equivalence rubric):
   - Jacobian-nullspace  (the "too-thin" baseline: d<O>/dtheta nullspace == PDET visibility map?)
   - GST / error-generator identifiability (rank of the same experiment-class Jacobian; gauge note)
   - Hamiltonian-learning / system-ID (LS recovery; which directions are unrecoverable)

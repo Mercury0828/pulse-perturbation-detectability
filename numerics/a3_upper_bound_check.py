@@ -5,7 +5,7 @@ For a two-point test (one benign vs one attack) separated by margin gamma in a s
 coordinate, with Gaussian shot noise of variance V/N, the Neyman-Pearson (midpoint-threshold) test reaches
 false-alarm = miss = alpha at  N* = (2 z_alpha)^2 V / gamma^2.  Empirically N* * gamma^2 is constant and the
 achieved (FA, MISS) match alpha -> the gamma-scaling and the constant are confirmed (achievable AND optimal for
-the two-point case). The remaining theory question (composite sets + log factor) is the A3 Codex attack.
+the two-point case). The remaining theory question (composite sets + log factor) is the A3 composite-set analysis.
 
 Run: python a3_upper_bound_check.py
 """
