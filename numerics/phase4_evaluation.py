@@ -85,7 +85,7 @@ def fig1_invisibility_decomposition():
     # ABSOLUTE K-level baseline = the free-schedule toggling-generator norm (max possible, ~ T*||V||)
     free_sc = sched_from_pulses([])
     K_baseline = float(np.linalg.norm(toggling_generator(free_sc, [Z]*len(free_sc.H))))
-    K_INVIS_THRESH = 0.05 * K_baseline   # K-invisible if ||K_V|| < 5% of the unsuppressed baseline
+    K_INVIS_THRESH = 0.05 * K_baseline   # control-blind if ||K_V|| < 5% of the unsuppressed baseline
     data = {"_K_baseline": K_baseline, "_K_invisible_threshold": K_INVIS_THRESH}
     for sn, pa in scheds.items():
         sc = sched_from_pulses(pa)
@@ -97,18 +97,18 @@ def fig1_invisibility_decomposition():
                 K = toggling_generator(sc, [V]*len(sc.H))
                 margin = float(np.linalg.norm(response_map(sc, [K], S, O)))
                 if klevel[nm] < K_INVIS_THRESH:
-                    vis[nm] = "K-invisible"      # control-fixable (deep suppression vs baseline)
+                    vis[nm] = "control-blind"      # control-fixable (deep suppression vs baseline)
                 elif margin < 1e-9:
-                    vis[nm] = "readout-invisible" # measurement-fixable
+                    vis[nm] = "readout-blind" # measurement-fixable
                 else:
                     vis[nm] = "visible"
             per_acc[an] = vis
         data[sn] = {"K_norm": klevel, "by_access": per_acc}
     # figure: stacked category counts per (schedule, access)
-    fig, ax = plt.subplots(1, 1, figsize=(11, 3.4))
-    cats = ["visible", "readout-invisible", "K-invisible"]; colors = {"visible": "C2", "readout-invisible": "C1", "K-invisible": "C3"}
+    fig, ax = plt.subplots(1, 1, figsize=figstyle.figsize(1.0, 2.5))
+    cats = ["visible", "readout-blind", "control-blind"]; colors = {"visible": "C2", "readout-blind": "C1", "control-blind": "C3"}
     # colour-blind aid: distinct hatch per category so the verdict reads without relying on the red/green hue
-    hatches = {"visible": "", "readout-invisible": "//", "K-invisible": "xx"}
+    hatches = {"visible": "", "readout-blind": "//", "control-blind": "xx"}
     labels = []; bars = {c: [] for c in cats}
     for sn in scheds:
         for an in accesses:
@@ -119,8 +119,9 @@ def fig1_invisibility_decomposition():
     xpos = np.arange(len(labels)); bottom = np.zeros(len(labels))
     for c in cats:
         ax.bar(xpos, bars[c], bottom=bottom, label=c, color=colors[c], hatch=hatches[c], edgecolor="white", linewidth=0.6); bottom += np.array(bars[c])
-    ax.set_xticks(xpos); ax.set_xticklabels(labels, fontsize=11); ax.set_ylabel("# perturbation directions (of X,Y,Z)")
-    ax.legend(); fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig1_invisibility_decomposition.png"), dpi=120); plt.close(fig)
+    ax.set_xticks(xpos); ax.set_xticklabels(labels); ax.set_ylabel("# perturbation directions (of X,Y,Z)")
+    ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.17), frameon=False)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig1_invisibility_decomposition")
     with open(os.path.join(OUT, "fig1_data.json"), "w") as f: json.dump(data, f, indent=2, default=str)
     return data
 
@@ -158,16 +159,16 @@ def fig2_control_knob():
                              "cannot detect the protective-echo blind spot at ANY shot count; MC at 1e6 shots gives "
                              "MISS~1.0. Only the knob (or a real finite-pulse residual) gives finite cost.")
     # figure
-    fig, ax = plt.subplots(1, 1, figsize=(9, 3.4))
+    fig, ax = plt.subplots(1, 1, figsize=figstyle.figsize(1.0, 2.5))
     names = [k for k in res if not k.startswith("_")]
     xs = np.arange(len(names))
     heights = [1e7 if res[n]["Nstar_shadow"] is None else res[n]["Nstar_shadow"] for n in names]
     cols = ["gray" if res[n]["Nstar_shadow"] is None else "C0" for n in names]
     ax.bar(xs, heights, color=cols)
-    ax.set_yscale("log"); ax.set_xticks(xs); ax.set_xticklabels(names, fontsize=8, rotation=15, ha="right")
+    ax.set_yscale("log"); ax.set_xticks(xs); ax.set_xticklabels(names, rotation=15, ha="right")
     ax.set_ylabel("finite-shot cost N* (shadow), log; gray = INF (ideal blind spot)")
     ax.set_title("Fig 2: control knob exposes the DD blind spot (baselines fail at K-level)")
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig2_control_knob.png"), dpi=120); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig2_control_knob")
     with open(os.path.join(OUT, "fig2_data.json"), "w") as f: json.dump(res, f, indent=2, default=str)
     return res
 
@@ -196,20 +197,20 @@ def fig3_finite_shot_scaling():
             fa = np.mean(np.max(np.abs(sigma*rng.standard_normal((4000, K))), axis=1) > t)
             if miss <= 0.05 and fa <= 0.065: found = int(N); break
         b["Nstar"].append(found)
-    fig, ax = plt.subplots(1, 2, figsize=(12, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.5))
     gg = np.array(gammas)
-    ax[0].loglog(gg, a["Nstar_pred"], "o", ms=8, label="N* = 10.82/gamma^2")
+    ax[0].loglog(gg, a["Nstar_pred"], "o", label="N* = 10.82/gamma^2")
     ax[0].loglog(gg, 10.82/gg**2, "k--", label="theory")
     ax2 = ax[0].twinx()
     ax2.errorbar(gg, a["MC_MISS"], yerr=a["MC_MISS_ci"], fmt="s", c="C3", capsize=3, label="MC MISS at N* (95% CI)")
     ax2.errorbar(gg, a["MC_FA"], yerr=a["MC_FA_ci"], fmt="^", c="C1", capsize=3, label="MC FA at N*")
     ax2.axhline(0.05, ls=":", c="gray"); ax2.set_ylabel("MC error rate at N*"); ax2.set_ylim(0, 0.15)
     ax[0].set_xlabel("gamma"); ax[0].set_ylabel("N* (shots)")
-    ax[0].legend(loc="upper right"); ax2.legend(loc="lower left", fontsize=11)
+    ax[0].legend(loc="upper right"); ax2.legend(loc="lower left")
     ax[1].semilogx(Ks, b["Nstar"], "s-", label="empirical worst-case N*")
     ax[1].semilogx(Ks, [(np.sqrt(2*np.log(max(K, 2)))+zb)**2 for K in Ks], "k--", label="(sqrt(2 ln K)+z)^2")
     ax[1].set_xlabel("K (packing size)"); ax[1].set_ylabel("N* (shots)"); ax[1].legend()
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig3_finite_shot_scaling.png"), dpi=120); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig3_finite_shot_scaling")
     out = {"a_gamma_scaling": a, "b_logK": b}
     with open(os.path.join(OUT, "fig3_data.json"), "w") as f: json.dump(out, f, indent=2, default=str)
     return out
@@ -224,7 +225,7 @@ def main():
     print("Phase-4 evaluation complete. Artifacts in results/phase4/:")
     for fn in sorted(os.listdir(OUT)): print("  ", fn)
     # quick console summary
-    print(f"\n Fig1 (1q) invisibility by schedule (full access); K-invisible threshold = "
+    print(f"\n Fig1 (1q) invisibility by schedule (full access); control-blind threshold = "
           f"{res['fig1']['_K_invisible_threshold']:.2f} (5% of baseline {res['fig1']['_K_baseline']:.2f}):")
     for sn, d in res["fig1"].items():
         if sn.startswith("_"): continue

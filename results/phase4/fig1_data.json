@@ -11,7 +11,7 @@
       "Z-only": {
         "X": "visible",
         "Y": "visible",
-        "Z": "readout-invisible"
+        "Z": "readout-blind"
       },
       "comp+X": {
         "X": "visible",
@@ -34,42 +34,42 @@
     "by_access": {
       "Z-only": {
         "X": "visible",
-        "Y": "K-invisible",
-        "Z": "K-invisible"
+        "Y": "control-blind",
+        "Z": "control-blind"
       },
       "comp+X": {
         "X": "visible",
-        "Y": "K-invisible",
-        "Z": "K-invisible"
+        "Y": "control-blind",
+        "Z": "control-blind"
       },
       "full": {
         "X": "visible",
-        "Y": "K-invisible",
-        "Z": "K-invisible"
+        "Y": "control-blind",
+        "Z": "control-blind"
       }
     }
   },
   "CPMG2": {
     "K_norm": {
       "X": 67.88225099390856,
-      "Y": 7.205186386308324e-34,
-      "Z": 7.205186386308324e-34
+      "Y": 0.0,
+      "Z": 0.0
     },
     "by_access": {
       "Z-only": {
         "X": "visible",
-        "Y": "K-invisible",
-        "Z": "K-invisible"
+        "Y": "control-blind",
+        "Z": "control-blind"
       },
       "comp+X": {
         "X": "visible",
-        "Y": "K-invisible",
-        "Z": "K-invisible"
+        "Y": "control-blind",
+        "Z": "control-blind"
       },
       "full": {
         "X": "visible",
-        "Y": "K-invisible",
-        "Z": "K-invisible"
+        "Y": "control-blind",
+        "Z": "control-blind"
       }
     }
   },
@@ -77,23 +77,23 @@
     "K_norm": {
       "X": 1.8006326323142117,
       "Y": 1.8006326323142117,
-      "Z": 6.348077150939551e-34
+      "Z": 0.0
     },
     "by_access": {
       "Z-only": {
-        "X": "K-invisible",
-        "Y": "K-invisible",
-        "Z": "K-invisible"
+        "X": "control-blind",
+        "Y": "control-blind",
+        "Z": "control-blind"
       },
       "comp+X": {
-        "X": "K-invisible",
-        "Y": "K-invisible",
-        "Z": "K-invisible"
+        "X": "control-blind",
+        "Y": "control-blind",
+        "Z": "control-blind"
       },
       "full": {
-        "X": "K-invisible",
-        "Y": "K-invisible",
-        "Z": "K-invisible"
+        "X": "control-blind",
+        "Y": "control-blind",
+        "Z": "control-blind"
       }
     }
   }

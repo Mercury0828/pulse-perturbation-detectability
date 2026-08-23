@@ -13,12 +13,13 @@ local-Pauli shadow-norm variance; a Monte-Carlo FA/miss confirmation at N*; a Fi
 baseline (the closest competitor); and a 3-qubit spectator extension to show it is not 2q-special.
 
 Run: python phase1_knob.py  ->  ../results/phase1/{phase1_results.json, fig*.png, PHASE1_RESULT.md helper}.
- Worst-case directions. Frozen Phase-0 artifacts are untouched.
+Worst-case directions. Frozen Phase-0 artifacts are untouched.
 """
 from __future__ import annotations
 import json, os
 import numpy as np
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+import figstyle; figstyle.apply()
 from scipy.stats import norm
 from pdet_core import (Schedule, toggling_generator, response_map, kernel_dim, kernel_basis,
                        singular_spectrum, benign_projector, gamma_margin)
@@ -42,24 +43,67 @@ def access_2q_comp():
     O = [kron(Z, I), kron(I, Z), kron(Z, Z)]          # computational-basis correlators only
     return S, O
 
+READOUT_ROT_NS = 20.0    # fixed physical duration of the appended basis-change rotation
+
 def cr_augmented(aug):
-    """CR(ZX90) schedule + an appended single-qubit readout-rotation segment (the control knob)."""
+    """CR(ZX90) schedule + an appended single-qubit readout-rotation segment (the measurement knob).
+
+    The rotation has a fixed physical duration rather than one integration step, so refining the grid does not
+    change the schedule it describes. It is appended after the gate, so it leaves U_0(T) of the gate itself
+    untouched and acts purely as a basis change.
+    """
     sh, dt, meta = M_.cr_zx90(augment="free", crosstalk=True)
     R = {"free": None, "x90_c": kron(X, I), "y90_c": kron(Y, I), "x90_t": kron(I, X),
          "x90_both": kron(X, I) + kron(I, X)}
     if R[aug] is not None:
-        sh = sh + [(np.pi / 2 / dt) * R[aug] / 2]      # one strong step ~ pi/2 rotation
+        m = max(1, int(round(READOUT_ROT_NS / dt)))
+        sh = sh + [(np.pi / 2 / (m * dt)) * R[aug] / 2] * m
     return sh, dt
 
 # ----------------------------------------------------------------------------- finite-shot shot budget
+def pauli_weight(O):
+    """Weight of a tensor product of Paulis: the number of factors that are not the identity."""
+    nq = int(round(np.log2(O.shape[0])))
+    P = {"I": I, "X": X, "Y": Y, "Z": Z}
+    for names in _pauli_words(nq):
+        T = np.array([[1.0 + 0j]])
+        for nm in names:
+            T = kron(T, P[nm])
+        if np.allclose(T, O) or np.allclose(T, -O):
+            return sum(1 for nm in names if nm != "I")
+    raise ValueError("observable is not a signed Pauli word")
+
+def _pauli_words(nq):
+    if nq == 0:
+        yield ""
+        return
+    for head in "IXYZ":
+        for tail in _pauli_words(nq - 1):
+            yield head + tail
+
+def shadow_variances(O_list):
+    """Per-observable classical-shadow variance factors, 3^weight, as a diagonal covariance.
+
+    A random-Pauli shadow estimates a weight-w Pauli with variance inflated by 3^w relative to measuring it
+    directly. The factors differ across observables, so the penalty is a covariance and not one number: for
+    {ZI, IZ, ZZ} it is diag(3, 3, 9). Collapsing that to a mean would misweight the witness.
+    """
+    return np.array([3.0 ** pauli_weight(O) for O in O_list], dtype=float)
+
 def shadow_norm_factor(O_list):
-    """Local-Pauli classical-shadow variance factor for the observables (~3^weight, averaged)."""
-    facs = []
-    for O in O_list:
-        # estimate Pauli weight by nonzero off-block structure: ZI/IZ weight1, ZZ weight2
-        w = int(round(np.log2(O.shape[0]) - np.sum(np.isclose(np.diag(O), np.diag(O)[0]))))  # rough
-    # simpler: weights known for our set
-    return None
+    """Worst-case scalar summary of shadow_variances, for the places that need a single conservative number."""
+    return float(np.max(shadow_variances(O_list)))
+
+def _finite(o):
+    """Replace non-finite floats by null so the archive is valid JSON. An infinite N* means the direction is
+    invisible at any budget, which the surrounding fields record explicitly."""
+    if isinstance(o, dict):
+        return {k: _finite(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [_finite(v) for v in o]
+    if isinstance(o, float) and not np.isfinite(o):
+        return None
+    return o
 
 def shot_budget(margin, V, fa=0.05, miss=0.05):
     """N* to detect a signal of size 'margin' against shot noise variance V, at (fa,miss).
@@ -112,14 +156,24 @@ def setup_3q():
     def sched(aug):
         sh = []
         for _ in range(nsteps):
-            H = g_eff * K3(Z, X, I) + ct * K3(I, X, I) + 0.3 * g_eff * K3(Z, I, Z)  # CR + crosstalk + spectator ZZ(0,2)
+            # the same H = (1/2) g_eff ZX + (1/2) g_ct IX convention models.cr_zx90 uses
+            H = (0.5 * g_eff * K3(Z, X, I) + 0.5 * ct * K3(I, X, I)
+                 + 0.3 * 0.5 * g_eff * K3(Z, I, Z))       # CR + crosstalk + spectator ZZ(0,2)
             sh.append(H)
         if aug == "x90_c":
-            sh = sh + [(np.pi / 2 / dt) * K3(X, I, I) / 2]
+            m = max(1, int(round(READOUT_ROT_NS / dt)))
+            sh = sh + [(np.pi / 2 / (m * dt)) * K3(X, I, I) / 2] * m
         return sh, dt
+
+    def realized_rot_ns():
+        return max(1, int(round(READOUT_ROT_NS / dt))) * dt
     S = [st(np.kron(np.kron(a, b), c)) for a in ([1, 0], [1, 1] / np.sqrt(2)) for b in ([1, 0], [0, 1]) for c in ([1, 0], [1, 1] / np.sqrt(2))]
     O = [K3(Z, I, I), K3(I, Z, I), K3(I, I, Z), K3(Z, Z, I), K3(Z, I, Z)]
-    Vd = {"det_c": K3(Z, I, I), "ctk": K3(I, X, I), "spec02": K3(Z, I, Z), "amp_c": K3(X, I, I), "det_t": K3(I, Z, I)}
+    # the same Gamma_ref normalisation models.dictionary_2q uses, so the 3q shot costs are on the scale the
+    # rest of the paper quotes rather than a factor 1/Gamma_ref away from it
+    G = M_.GAMMA_REF
+    Vd = {"det_c": G * K3(Z, I, I), "ctk": G * K3(I, X, I), "spec02": G * K3(Z, I, Z),
+          "amp_c": G * K3(X, I, I), "det_t": G * K3(I, Z, I)}
     return sched, S, O, Vd
 
 # ----------------------------------------------------------------------------- main
@@ -127,7 +181,15 @@ def main():
     res = {"seed": SEED}
     S, O = access_2q_comp()
     benign = ["amp_c"]   # only slow amplitude drift is benign; det_c (frequency mismatch) is a detectable ATTACK
-    V_shadow = 3.0       # local-Pauli shadow variance proxy (weight-1 dominant); direct V=1 also reported
+    # The shadow penalty is a per-observable covariance, diag(3^weight), computed from the observables actually
+    # measured rather than assumed to be the weight-one value. A single conservative scalar is carried for the
+    # two-point formula, and the covariance itself is reported so the two protocols cannot be conflated.
+    V_shadow_diag = shadow_variances(O)
+    V_shadow = shadow_norm_factor(O)
+    res["shadow_variance_diag"] = {"observables": ["ZI", "IZ", "ZZ"][:len(O)],
+                                   "factors": V_shadow_diag.tolist(),
+                                   "scalar_used": V_shadow,
+                                   "note": "worst-case 3^weight; the diagonal is the honest covariance"}
 
     augs = ["free", "x90_c", "y90_c", "x90_t", "x90_both"]
     twoq = {}
@@ -188,25 +250,28 @@ def main():
                                    np.isfinite(threeq["x90_c"]["shotcost_det_c_shadow"]))}
 
     _figs(res, twoq);
-    with open(os.path.join(OUT, "phase1_results.json"), "w") as f: json.dump(res, f, indent=2, default=str)
+    with open(os.path.join(OUT, "phase1_results.json"), "w") as f:
+        # an infinite cost is a real verdict, but bare Infinity is not JSON, so it is written as null and the
+        # accompanying note says so. Standards-compliant readers can then load the archive.
+        json.dump(_finite(res), f, indent=2, allow_nan=False, default=str)
     _print(res); return res
 
 def _figs(res, twoq):
     augs = list(twoq);
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4.5))
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.8))
     kd = [twoq[a]["dim_ker_M"] for a in augs]; gn = [twoq[a]["gamma_norm"] for a in augs]
     x = np.arange(len(augs))
     ax[0].bar(x - 0.2, kd, 0.4, label="dim ker M"); ax[0].bar(x + 0.2, gn, 0.4, label="gamma_norm(attack)")
     ax[0].axhline(0.02, ls="--", c="r", label="gamma_min=0.02")
     ax[0].set_xticks(x); ax[0].set_xticklabels(augs); ax[0].legend()
-    ax[0].set_title("2q CR, computational readout: control knob exposes invisible attack")
+    ax[0].set_title("2q CR, computational readout")
     sc = [twoq[a]["shot_budget_det_c_shadow"] for a in augs]
     sc_plot = [s if np.isfinite(s) else np.nan for s in sc]
     ax[1].bar(x, [1e9 if not np.isfinite(s) else s for s in sc], color=["gray" if not np.isfinite(s) else "C2" for s in sc])
     ax[1].set_yscale("log"); ax[1].set_xticks(x); ax[1].set_xticklabels(augs)
-    ax[1].set_title("finite-shot cost N* for det_c (gray=INFINITE/invisible)")
+    ax[1].set_title("N* for det_c (gray = invisible)")
     ax[1].set_ylabel("shots N* (shadow), log")
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig1_knob_win_2q.png"), dpi=120); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig1_knob_win_2q")
 
 def _print(r):
     print("\n========== PDET Phase-1 R-O1 make-or-break ==========")

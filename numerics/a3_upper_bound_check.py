@@ -5,7 +5,8 @@ For a two-point test (one benign vs one attack) separated by margin gamma in a s
 coordinate, with Gaussian shot noise of variance V/N, the Neyman-Pearson (midpoint-threshold) test reaches
 false-alarm = miss = alpha at  N* = (2 z_alpha)^2 V / gamma^2.  Empirically N* * gamma^2 is constant and the
 achieved (FA, MISS) match alpha -> the gamma-scaling and the constant are confirmed (achievable AND optimal for
-the two-point case). The remaining theory question (composite sets + log factor) is the A3 composite-set analysis.
+the two-point case). Composite sets and the accompanying log factor are treated separately in the manuscript's
+appendix.
 
 Run: python a3_upper_bound_check.py
 """
@@ -24,6 +25,9 @@ def check(alpha=0.05, V=1.0, seed=20260628, nrep=20000):
         miss = np.mean(rng.normal(g, sig, nrep) <= thr)
         print(f" {g:5.3f}  {N:10.1f}    {fa:.3f}    {miss:.3f}    {N*g**2:.4f}")
     print(f" => N*·gamma^2 == (2 z)^2 V = {(2*z)**2*V:.4f} (const): two-point cost is Theta(V/gamma^2), tight.")
+
+# run_all.py drives every module through main()
+main = check
 
 if __name__ == "__main__":
     check()

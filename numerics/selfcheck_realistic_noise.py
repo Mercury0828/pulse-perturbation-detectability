@@ -18,7 +18,6 @@ PRE-REGISTERED expectation + falsifier (frozen BEFORE running):
        background. Falsifier: knob-exposed direction undetectable at a realistic budget (1e6 shots).
 
 Run: python selfcheck_realistic_noise.py -> ../results/selfcheck/realistic_noise_results.json + fig.
-
 """
 from __future__ import annotations
 import json, os
@@ -93,7 +92,7 @@ def Nstar(margin, V):
 
 def main():
     res = {"seed": SEED, "params": {"T1_us": T1_us, "T2_us": T2_us, "p_readout": P_RO},
-           "preregistered": "see module docstring (expectation + falsifier frozen before run)"}
+           "frozen_expectation": "see module docstring (expectation + falsifier frozen before run)"}
     obs = [sx, sy, sz]  # full single-qubit tomography
     theta_phys_rate = 0.05  # detuning amplitude used for margin (rad/us); margin uses eps internally
     V_eff = readout_inflated_V()
@@ -131,7 +130,7 @@ def main():
                     "signal appearing at the echo (decoherence creating coherent detectability).")}
 
     # figure
-    fig, ax = plt.subplots(1, 2, figsize=(12, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.5))
     ax[0].semilogy(Tseqs, np.array(rows["free_signal_norm"]) + 1e-12, "o-", label="free (visible)")
     ax[0].semilogy(Tseqs, np.array(rows["broken_signal_norm"]) + 1e-12, "s-", label="broken echo (knob)")
     ax[0].semilogy(Tseqs, np.array(rows["echo_signal_norm"]) + 1e-12, "^-", label="echo (blind)")
@@ -144,7 +143,7 @@ def main():
     ax[1].axhline(1e6, ls="--", c="gray", label="1e6 shot budget")
     ax[1].set_xlabel("T_seq (us)"); ax[1].set_ylabel("N* (shots, readout-inflated V)")
     ax[1].legend()
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig_L1_realistic_noise.png"), dpi=120); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig_L1_realistic_noise")
 
     with open(os.path.join(OUT, "realistic_noise_results.json"), "w") as f: json.dump(res, f, indent=2, default=str)
     print("\n===== SELF-CHECK L1: realistic open-system noise =====")

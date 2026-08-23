@@ -1,24 +1,24 @@
 ﻿"""
-SELF-CHECK -- full baseline HEAD-TO-HEAD at EQUAL BUDGET on ONE detection task (hostile-review must-do #2).
+SELF-CHECK -- full baseline HEAD-TO-HEAD at EQUAL BUDGET on ONE detection task.
 
 Task: detect a coherent Z-drift on an idle qubit that production XY4 dynamical decoupling has made K-level blind
 (blind to FULL single-qubit tomography). Same prep/measurement restriction, same target, same (5%,5%) error;
 compare TOTAL DEVICE SHOTS to first detection across named methods.
 
-Honest expected outcome (pre-registered prediction): PDET is NOT superior in raw detection power;
+Expected outcome, fixed before the run: PDET is NOT superior in raw detection power;
 measurement-only methods FAIL on a K-level null (QFI=0 / unidentifiable), DD-spectroscopy CAN match PDET but must
 SCAN sequence space (blind search), while PDET's classical kernel (0 device shots) picks the minimal exposing
 variant directly. So PDET's value = fast nullspace diagnosis + knob proposal + efficiency (avoids the scan), not
 superiority. We quantify exactly that.
 
 Run: python selfcheck_baseline_headtohead.py -> ../results/selfcheck/baseline_headtohead_results.json + fig.
-
 """
 from __future__ import annotations
 import json, os
 import numpy as np
 from scipy.stats import norm
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+import figstyle; figstyle.apply()
 import qutip as qt
 from selfcheck_dd_idle_usecase import first_order_signal, Nstar, dd_pulse_times, ff_protection
 
@@ -92,19 +92,16 @@ def main():
                                 "NOT a shot-count superiority over DD-spectroscopy."),
         "PDET_pick_xy4_asym_total_shots": round(pdet_shots, 1), "DD_scan_illustrative_total": round(dd_total, 1)}
     # figure (HONEST: matched objective = detect WHILE retaining protection; PDET ~ DD-spectroscopy = siblings)
-    plt.rcParams.update({"font.size": 13, "axes.titlesize": 13, "axes.labelsize": 13})
-    fig, ax = plt.subplots(1, 1, figsize=(9, 3.2))
+    fig, ax = plt.subplots(1, 1, figsize=figstyle.figsize(figstyle.SINGLE_PANEL_FRAC, 2.6))
     labels = ["PDET\n(free kernel\n+ knob)", "DD/filter-fn\nspectroscopy\n(blind scan)", "Fisher\nexp-design\n(meas-only)", "GST\n(under XY4)"]
     vals = [pdet_shots, dd_total, 1e8, 1e8]
     cols = ["#2ca02c", "#1f77b4", "#d62728", "#d62728"]
     ax.bar(labels, vals, color=cols, width=0.6)
     ax.set_yscale("log"); ax.set_ylim(1e2, 1e9)
     ax.set_ylabel("total device shots\n(matched objective: detect + retain protection)")
-    ax.set_title("Detecting an XY4-hidden coherent drift:\nmeasurement-only methods FAIL; PDET â‰ˆ DD-spectroscopy (siblings)")
     for i, v in enumerate(vals):
-        ax.annotate("FAIL\n(K-level)" if v >= 1e8 else f"~{v:.0f}\nshots", (i, v), ha="center", va="bottom", fontsize=11)
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig_baseline_headtohead.png"), dpi=130); plt.close(fig)
-    plt.rcParams.update(plt.rcParamsDefault)
+        ax.annotate("FAIL\n(K-level)" if v >= 1e8 else f"~{v:.0f}\nshots", (i, v), ha="center", va="bottom", fontsize=figstyle.ANNOT_PT)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig_baseline_headtohead")
     with open(os.path.join(OUT, "baseline_headtohead_results.json"), "w") as f: json.dump(res, f, indent=2, default=str)
     print("\n===== Equal-budget baseline head-to-head =====")
     print(" per-variant detect shots:", per_variant)

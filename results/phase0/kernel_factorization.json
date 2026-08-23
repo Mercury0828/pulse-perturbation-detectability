@@ -1,0 +1,151 @@
+{
+  "pauli_1q_ideal": [
+    {
+      "schedule": "free",
+      "access": "Z-only",
+      "dim_ker_K": 0,
+      "dim_ker_M": 1,
+      "access_blind_dim": 1
+    },
+    {
+      "schedule": "free",
+      "access": "comp+X",
+      "dim_ker_K": 0,
+      "dim_ker_M": 0,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "free",
+      "access": "full",
+      "dim_ker_K": 0,
+      "dim_ker_M": 0,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "echo",
+      "access": "Z-only",
+      "dim_ker_K": 2,
+      "dim_ker_M": 2,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "echo",
+      "access": "comp+X",
+      "dim_ker_K": 2,
+      "dim_ker_M": 2,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "echo",
+      "access": "full",
+      "dim_ker_K": 2,
+      "dim_ker_M": 2,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "CPMG2",
+      "access": "Z-only",
+      "dim_ker_K": 2,
+      "dim_ker_M": 2,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "CPMG2",
+      "access": "comp+X",
+      "dim_ker_K": 2,
+      "dim_ker_M": 2,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "CPMG2",
+      "access": "full",
+      "dim_ker_K": 2,
+      "dim_ker_M": 2,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "XY4",
+      "access": "Z-only",
+      "dim_ker_K": 3,
+      "dim_ker_M": 3,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "XY4",
+      "access": "comp+X",
+      "dim_ker_K": 3,
+      "dim_ker_M": 3,
+      "access_blind_dim": 0
+    },
+    {
+      "schedule": "XY4",
+      "access": "full",
+      "dim_ker_K": 3,
+      "dim_ker_M": 3,
+      "access_blind_dim": 0
+    }
+  ],
+  "ideal_toggling_norms": {
+    "baseline": 1.4142135623730951,
+    "norms": {
+      "free": [
+        1.4142135623730951,
+        1.4142135623730951,
+        1.4142135623730951
+      ],
+      "echo": [
+        1.4142135623730951,
+        0.0,
+        0.0
+      ],
+      "CPMG2": [
+        1.4142135623730951,
+        0.0,
+        0.0
+      ],
+      "XY4": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "finite_pulse_norms": {
+    "baseline": 67.88225099390856,
+    "norms": {
+      "free": [
+        67.88225099390856,
+        67.88225099390856,
+        67.88225099390856
+      ],
+      "echo": [
+        67.88225099390856,
+        1.6764753112225368,
+        1.6764753112225368
+      ],
+      "CPMG2": [
+        67.88225099390856,
+        0.0,
+        0.0
+      ],
+      "XY4": [
+        1.8006326323142117,
+        1.8006326323142117,
+        0.0
+      ]
+    },
+    "numerical_rank": {
+      "free": 3,
+      "echo": 3,
+      "CPMG2": 1,
+      "XY4": 1
+    }
+  },
+  "transmon_dictionary": [
+    "amp",
+    "det",
+    "phase",
+    "leak",
+    "wd"
+  ]
+}

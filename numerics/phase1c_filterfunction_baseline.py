@@ -23,7 +23,6 @@ Also: a genuine MULTI-QUBIT DD blind spot -- a control-echo cancels K_ZI AND K_Z
 coherent error), hidden from ALL measurements; breaking the echo exposes it.
 
 Run: python phase1c_filterfunction_baseline.py -> ../results/phase1/phase1c_results.json + table printout.
-
 """
 from __future__ import annotations
 import json, os

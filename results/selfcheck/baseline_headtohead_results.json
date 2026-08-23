@@ -3,7 +3,7 @@
   "task": "detect a Z-drift hidden by production XY4 on an idle qubit (K-level blind)",
   "budget_basis": "total device shots to detect at (5%,5%); same prep/measurement/target",
   "per_variant_detect_shots": {
-    "xy4": 8947092170538.6,
+    "xy4": 8947092175169.7,
     "xy4_drop1": 412.6,
     "xy4_asym": 9310.4,
     "echo": 148903.8,

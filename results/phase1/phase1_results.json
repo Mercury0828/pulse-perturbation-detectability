@@ -1,19 +1,33 @@
 {
   "seed": 20260628,
+  "shadow_variance_diag": {
+    "observables": [
+      "ZI",
+      "IZ",
+      "ZZ"
+    ],
+    "factors": [
+      3.0,
+      3.0,
+      9.0
+    ],
+    "scalar_used": 9.0,
+    "note": "worst-case 3^weight; the diagonal is the honest covariance"
+  },
   "twoq": {
     "free": {
       "dim_ker_M": 1,
-      "gamma_norm": 1.5470215387104077e-32,
-      "margin_det_c": 6.533207540849938e-17,
-      "M_op": 5.969532895031625,
-      "shot_budget_det_c_direct": Infinity,
-      "shot_budget_det_c_shadow": Infinity,
+      "gamma_norm": 0.0,
+      "margin_det_c": 0.0,
+      "M_op": 11.92150591895576,
+      "shot_budget_det_c_direct": null,
+      "shot_budget_det_c_shadow": null,
       "cfi_per_direction": {
-        "amp_c": 5.759999999999965,
-        "det_c": 4.2682800771818504e-33,
-        "ctk": 29.292454714810543,
-        "spec": 27.551695842740777,
-        "det_t": 27.551695842740777
+        "amp_c": 5.760000000000607,
+        "det_c": 0.0,
+        "ctk": 142.12230337569721,
+        "spec": 28.800000000001596,
+        "det_t": 28.800000000001596
       },
       "names": [
         "amp_c",
@@ -25,17 +39,17 @@
     },
     "x90_c": {
       "dim_ker_M": 0,
-      "gamma_norm": 0.38523347529966695,
-      "margin_det_c": 7.6274167303582745,
-      "M_op": 8.164857709392946,
-      "shot_budget_det_c_direct": 74.40798538714378,
-      "shot_budget_det_c_shadow": 223.22395616143137,
+      "gamma_norm": 0.4202861617903519,
+      "margin_det_c": 5.557733695769935,
+      "M_op": 8.075718066084166,
+      "shot_budget_det_c_direct": 140.1454587923488,
+      "shot_budget_det_c_shadow": 1261.3091291311391,
       "cfi_per_direction": {
-        "amp_c": 7.128866632452244,
-        "det_c": 65.75729259178773,
-        "ctk": 17.810593598730538,
-        "spec": 16.449140094658727,
-        "det_t": 12.695007977118678
+        "amp_c": 65.21722228287817,
+        "det_c": 30.88840383309654,
+        "ctk": 64.68143940298391,
+        "spec": 47.66720000000313,
+        "det_t": 11.520000000000607
       },
       "names": [
         "amp_c",
@@ -46,18 +60,18 @@
       ]
     },
     "y90_c": {
-      "dim_ker_M": 1,
-      "gamma_norm": 6.684574815528612e-16,
-      "margin_det_c": 3.258008546271745e-15,
-      "M_op": 4.873136375235227,
-      "shot_budget_det_c_direct": Infinity,
-      "shot_budget_det_c_shadow": Infinity,
+      "dim_ker_M": 0,
+      "gamma_norm": 0.42202327319863925,
+      "margin_det_c": 3.9255518804877236,
+      "M_op": 8.042477193190162,
+      "shot_budget_det_c_direct": 280.9137862904416,
+      "shot_budget_det_c_shadow": 2528.2240766139744,
       "cfi_per_direction": {
-        "amp_c": 11.51999999999994,
-        "det_c": 1.0614619709974683e-29,
-        "ctk": 23.74745813164072,
-        "spec": 21.798847859928934,
-        "det_t": 11.263187151360025
+        "amp_c": 11.545600000000602,
+        "det_c": 15.444201916548263,
+        "ctk": 64.68143940298391,
+        "spec": 23.833600000001578,
+        "det_t": 11.520000000000607
       },
       "names": [
         "amp_c",
@@ -68,18 +82,18 @@
       ]
     },
     "x90_t": {
-      "dim_ker_M": 1,
-      "gamma_norm": 7.994137681950861e-20,
-      "margin_det_c": 1.282242668763509e-16,
-      "M_op": 10.692953815619001,
-      "shot_budget_det_c_direct": Infinity,
-      "shot_budget_det_c_shadow": Infinity,
+      "dim_ker_M": 2,
+      "gamma_norm": 3.0145686246002373e-35,
+      "margin_det_c": 8.824766327896538e-19,
+      "M_op": 5.724334022399761,
+      "shot_budget_det_c_direct": null,
+      "shot_budget_det_c_shadow": null,
       "cfi_per_direction": {
-        "amp_c": 5.759999999999965,
-        "det_c": 1.644146261597766e-32,
-        "ctk": 114.339261302961,
-        "spec": 1.602675309408027,
-        "det_t": 1.6026753094080268
+        "amp_c": 7.0295370471462,
+        "det_c": 7.787650074197655e-37,
+        "ctk": 4.410936007435116e-29,
+        "spec": 32.76800000000339,
+        "det_t": 32.76800000000338
       },
       "names": [
         "amp_c",
@@ -90,18 +104,18 @@
       ]
     },
     "x90_both": {
-      "dim_ker_M": 0,
-      "gamma_norm": 0.11178434384739636,
-      "margin_det_c": 6.851172390080311,
-      "M_op": 8.282726409931486,
-      "shot_budget_det_c_direct": 92.22415938926356,
-      "shot_budget_det_c_shadow": 276.6724781677907,
+      "dim_ker_M": 2,
+      "gamma_norm": 3.3091812084452323e-16,
+      "margin_det_c": 3.0635515523960482e-15,
+      "M_op": 9.184467571163568,
+      "shot_budget_det_c_direct": null,
+      "shot_budget_det_c_shadow": null,
       "cfi_per_direction": {
-        "amp_c": 27.441239842454266,
-        "det_c": 48.9076953719439,
-        "ctk": 68.60355678177658,
-        "spec": 1.3370654206290498,
-        "det_t": 17.439474516471876
+        "amp_c": 84.35444456575523,
+        "det_c": 9.387694232586714e-30,
+        "ctk": 2.503734662112707e-29,
+        "spec": 25.554308626126797,
+        "det_t": 39.32160000000445
       },
       "names": [
         "amp_c",
@@ -116,31 +130,31 @@
     "free": {
       "N_tested": 1000000,
       "predicted_N_star_shadow": null,
-      "FA": 0.4775,
-      "MISS": 0.505
+      "FA": 0.0,
+      "MISS": 1.0
     },
     "x90_c": {
-      "N_tested": 446,
-      "predicted_N_star_shadow": 223.22395616143137,
-      "FA": 0.0075,
-      "MISS": 0.01
+      "N_tested": 2522,
+      "predicted_N_star_shadow": 1261.3091291311391,
+      "FA": 0.005,
+      "MISS": 0.0075
     }
   },
   "knob_win_2q": {
     "free_dim_ker": 1,
     "x90c_dim_ker": 0,
-    "free_margin_det_c": 6.533207540849938e-17,
-    "x90c_margin_det_c": 7.6274167303582745,
-    "free_shotcost_det_c": Infinity,
-    "x90c_shotcost_det_c": 223.22395616143137,
+    "free_margin_det_c": 0.0,
+    "x90c_margin_det_c": 5.557733695769935,
+    "free_shotcost_det_c": null,
+    "x90c_shotcost_det_c": 1261.3091291311391,
     "knob_exposes_invisible_attack": true,
     "real_finite_shot_cost_drops_inf_to_finite": true
   },
   "threeq": {
     "free": {
       "dim_ker_M": 3,
-      "margin_det_c": 3.8323798172483066e-14,
-      "shotcost_det_c_shadow": Infinity,
+      "margin_det_c": 3.0332441272073853e-16,
+      "shotcost_det_c_shadow": null,
       "names": [
         "det_c",
         "ctk",
@@ -151,8 +165,8 @@
     },
     "x90_c": {
       "dim_ker_M": 0,
-      "margin_det_c": 1016.1174184342691,
-      "shotcost_det_c_shadow": 0.012577894817524695,
+      "margin_det_c": 6.69643069828276,
+      "shotcost_det_c_shadow": 868.8208775643478,
       "names": [
         "det_c",
         "ctk",
@@ -163,8 +177,8 @@
     }
   },
   "knob_win_3q": {
-    "free_margin": 3.8323798172483066e-14,
-    "x90c_margin": 1016.1174184342691,
+    "free_margin": 3.0332441272073853e-16,
+    "x90c_margin": 6.69643069828276,
     "free_dim_ker": 3,
     "x90c_dim_ker": 0,
     "cost_inf_to_finite": true

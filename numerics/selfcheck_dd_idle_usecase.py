@@ -18,7 +18,6 @@ coherence (protection) that the modified DD partially loses (trade). Falsifier: 
 or not exposable, or no protection difference.
 
 Run: python selfcheck_dd_idle_usecase.py -> ../results/selfcheck/dd_idle_usecase_results.json + fig.
-
 """
 from __future__ import annotations
 import json, os
@@ -112,20 +111,28 @@ def main():
                     "uses the 1/f filter function). PDET's classical kernel flags the blind direction for free.")}
     # figure
     figstyle.apply()
-    fig, ax = plt.subplots(1, 2, figsize=(12, 3.4))
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.5))
     names = list(rows); x = np.arange(len(names))
     sigs = [rows[s]["Zdrift_signal_fulltomo"] for s in names]
     ax[0].bar(x, sigs, color=["#2ca02c","#d62728","#1f77b4","#1f77b4"])
-    ax[0].annotate("blind\n(~2e-5)", (1, max(sigs)*0.04), ha="center", va="bottom", fontsize=12, color="#d62728")
-    ax[0].set_xticks(x); ax[0].set_xticklabels(names, fontsize=12); ax[0].set_ylabel("Z-drift signal (FULL tomography)")
+    ax[0].annotate("blind\n(~2e-5)", (1, max(sigs)*0.04), ha="center", va="bottom", fontsize=figstyle.ANNOT_PT, color="#d62728")
+    ax[0].set_xticks(x); ax[0].set_xticklabels(names); ax[0].set_ylabel("Z-drift signal (FULL tomography)")
     ax2 = ax[1].twinx()
     ns = [1e8 if rows[s]["Nstar"] is None else rows[s]["Nstar"] for s in names]
     ax[1].bar(x-0.2, ns, 0.4, color="C0", label="N* (shots)"); ax[1].set_yscale("log"); ax[1].set_ylabel("N* (shots)")
     ax2.bar(x+0.2, [rows[s]["protection_1overf_vs_free"] for s in names], 0.4, color="C1", label="1/f protection x")
     ax2.set_ylabel("1/f protection factor vs free")
-    ax[1].set_xticks(x); ax[1].set_xticklabels(names, fontsize=12)
-    ax[1].legend(loc="upper left", fontsize=12); ax2.legend(loc="upper right", fontsize=12)
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig_dd_idle_usecase.png"), dpi=130); plt.close(fig)
+    ax[1].set_xticks(x); ax[1].set_xticklabels(names)
+    # one legend, above the bars: two legends inside a twin-axis panel collide with
+    # the log-scale N* bars and were the least readable part of the figure.
+    ax[1].set_ylim(top=max(ns) * 60)
+    ax2.set_ylim(top=max(rows[s]["protection_1overf_vs_free"] for s in names) * 1.45)
+    h1, l1 = ax[1].get_legend_handles_labels()
+    h2, l2 = ax2.get_legend_handles_labels()
+    ax[1].legend(h1 + h2, l1 + l2, loc="upper center", ncol=2, frameon=False,
+                 fontsize=figstyle.ANNOT_PT, handlelength=1.2, columnspacing=1.0,
+                 borderaxespad=0.1)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig_dd_idle_usecase")
     plt.rcParams.update(plt.rcParamsDefault)
     with open(os.path.join(OUT, "dd_idle_usecase_results.json"), "w") as f: json.dump(res, f, indent=2, default=str)
     print("\n===== GENUINE non-contrived use case: DD on idle qubit =====")

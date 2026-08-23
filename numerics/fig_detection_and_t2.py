@@ -5,6 +5,7 @@ import os, json
 import numpy as np
 from scipy.stats import norm
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+import figstyle; figstyle.apply()
 OUT = os.path.join(os.path.dirname(__file__), "..", "results", "selfcheck"); os.makedirs(OUT, exist_ok=True)
 PD = os.path.join(os.path.dirname(__file__), "..", "paper", "figures")
 SEED = 20260628
@@ -38,19 +39,19 @@ def t2_sweep(gamma0=0.2, T_seq_us=16.0, V=3.0, alpha=0.05):
 def main():
     res = {"detection_curves": detection_curves(), "t2_sweep": t2_sweep()}
     dc = res["detection_curves"]
-    fig, ax = plt.subplots(1, 1, figsize=(7, 2.9))
+    fig, ax = plt.subplots(1, 1, figsize=figstyle.figsize(figstyle.SINGLE_PANEL_FRAC, 2.4))
     for label, mk in [("direct (V=1)", "o-"), ("shadow (V=3)", "s--")]:
         ax.loglog(dc["N"], np.array(dc[label]["MISS"]) + 1e-4, mk, label=f"miss, {label}")
     ax.loglog(dc["N"], np.array(dc["direct (V=1)"]["FA"]) + 1e-4, "^:", color="gray", label="false alarm (direct)")
     ax.axhline(0.05, ls=":", c="r", alpha=0.6, label="5% target")
     ax.set_xlabel("shots $N$"); ax.set_ylabel("error rate"); ax.set_title(f"Detection error vs shots ($\\gamma={dc['gamma']}$)")
-    ax.legend(fontsize=8); fig.tight_layout(); fig.savefig(os.path.join(PD, "fig_detection_curves.png"), dpi=130); plt.close(fig)
+    ax.legend(); fig.tight_layout(); figstyle.save(fig, OUT, "fig_detection_curves")
     ts = res["t2_sweep"]
-    fig, ax = plt.subplots(1, 1, figsize=(7, 2.9))
+    fig, ax = plt.subplots(1, 1, figsize=figstyle.figsize(figstyle.SINGLE_PANEL_FRAC, 2.4))
     ax.semilogy(ts["T2_us"], ts["Nstar"], "o-")
     ax.set_xlabel("coherence time $T_2$ ($\\mu$s)"); ax.set_ylabel("detection cost $N^\\star$ (shots)")
-    ax.set_title("Device realism: detection cost vs coherence time"); ax.grid(True, which="both", alpha=0.3)
-    fig.tight_layout(); fig.savefig(os.path.join(PD, "fig_t2_sweep.png"), dpi=130); plt.close(fig)
+    ax.grid(True, which="both", alpha=0.3)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig_t2_sweep")
     json.dump(res, open(os.path.join(OUT, "detection_t2.json"), "w"), indent=2)
     print("detection FA(direct):", [round(x,3) for x in dc["direct (V=1)"]["FA"]])
     print("detection MISS(direct):", [round(x,3) for x in dc["direct (V=1)"]["MISS"]])

@@ -1,0 +1,310 @@
+{
+  "target_preservation": {
+    "free": {
+      "edit_kind": "baseline",
+      "pulse_word": "-",
+      "target_infidelity_ideal": 0.0,
+      "target_infidelity_finite_pulse": 0.0,
+      "preserves_target": true,
+      "residual": "identity"
+    },
+    "echo": {
+      "edit_kind": "baseline",
+      "pulse_word": "X",
+      "target_infidelity_ideal": 1.0,
+      "target_infidelity_finite_pulse": 1.0,
+      "preserves_target": false,
+      "residual": "Pauli X (frame-trackable)"
+    },
+    "CPMG2": {
+      "edit_kind": "baseline",
+      "pulse_word": "XX",
+      "target_infidelity_ideal": 0.0,
+      "target_infidelity_finite_pulse": 0.0,
+      "preserves_target": true,
+      "residual": "identity"
+    },
+    "XY4": {
+      "edit_kind": "production",
+      "pulse_word": "XYXY",
+      "target_infidelity_ideal": 0.0,
+      "target_infidelity_finite_pulse": 0.0,
+      "preserves_target": true,
+      "residual": "identity"
+    },
+    "XY4 drop-1": {
+      "edit_kind": "pulse removal",
+      "pulse_word": "XYX",
+      "target_infidelity_ideal": 1.0,
+      "target_infidelity_finite_pulse": 1.0,
+      "preserves_target": false,
+      "residual": "Pauli Y (frame-trackable)"
+    },
+    "XY4 asym": {
+      "edit_kind": "timing only",
+      "pulse_word": "XYXY",
+      "target_infidelity_ideal": 0.0,
+      "target_infidelity_finite_pulse": 0.0,
+      "preserves_target": true,
+      "residual": "identity"
+    }
+  },
+  "prep_vs_measurement": [
+    {
+      "schedule": "free",
+      "preparations": "|0> only",
+      "readout": "Z-only",
+      "verdict": "preparation-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "free",
+      "preparations": "|0> only",
+      "readout": "full",
+      "verdict": "preparation-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "free",
+      "preparations": "|0>,|1>",
+      "readout": "Z-only",
+      "verdict": "preparation-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "free",
+      "preparations": "|0>,|1>",
+      "readout": "full",
+      "verdict": "preparation-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "free",
+      "preparations": "|0>,|+>",
+      "readout": "Z-only",
+      "verdict": "measurement-blind",
+      "signal": 0.0,
+      "witness": "Y"
+    },
+    {
+      "schedule": "free",
+      "preparations": "|0>,|+>",
+      "readout": "full",
+      "verdict": "visible",
+      "signal": 2.0,
+      "witness": null
+    },
+    {
+      "schedule": "free",
+      "preparations": "|0>,|+>,|+i>",
+      "readout": "Z-only",
+      "verdict": "measurement-blind",
+      "signal": 0.0,
+      "witness": "Y"
+    },
+    {
+      "schedule": "free",
+      "preparations": "|0>,|+>,|+i>",
+      "readout": "full",
+      "verdict": "visible",
+      "signal": 2.0,
+      "witness": null
+    },
+    {
+      "schedule": "echo",
+      "preparations": "|0> only",
+      "readout": "Z-only",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "echo",
+      "preparations": "|0> only",
+      "readout": "full",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "echo",
+      "preparations": "|0>,|1>",
+      "readout": "Z-only",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "echo",
+      "preparations": "|0>,|1>",
+      "readout": "full",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "echo",
+      "preparations": "|0>,|+>",
+      "readout": "Z-only",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "echo",
+      "preparations": "|0>,|+>",
+      "readout": "full",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "echo",
+      "preparations": "|0>,|+>,|+i>",
+      "readout": "Z-only",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "echo",
+      "preparations": "|0>,|+>,|+i>",
+      "readout": "full",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4",
+      "preparations": "|0> only",
+      "readout": "Z-only",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4",
+      "preparations": "|0> only",
+      "readout": "full",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4",
+      "preparations": "|0>,|1>",
+      "readout": "Z-only",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4",
+      "preparations": "|0>,|1>",
+      "readout": "full",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4",
+      "preparations": "|0>,|+>",
+      "readout": "Z-only",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4",
+      "preparations": "|0>,|+>",
+      "readout": "full",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4",
+      "preparations": "|0>,|+>,|+i>",
+      "readout": "Z-only",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4",
+      "preparations": "|0>,|+>,|+i>",
+      "readout": "full",
+      "verdict": "control-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4 asym",
+      "preparations": "|0> only",
+      "readout": "Z-only",
+      "verdict": "preparation-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4 asym",
+      "preparations": "|0> only",
+      "readout": "full",
+      "verdict": "preparation-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4 asym",
+      "preparations": "|0>,|1>",
+      "readout": "Z-only",
+      "verdict": "preparation-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4 asym",
+      "preparations": "|0>,|1>",
+      "readout": "full",
+      "verdict": "preparation-blind",
+      "signal": 0.0,
+      "witness": null
+    },
+    {
+      "schedule": "XY4 asym",
+      "preparations": "|0>,|+>",
+      "readout": "Z-only",
+      "verdict": "measurement-blind",
+      "signal": 0.0,
+      "witness": "Y"
+    },
+    {
+      "schedule": "XY4 asym",
+      "preparations": "|0>,|+>",
+      "readout": "full",
+      "verdict": "visible",
+      "signal": 0.1,
+      "witness": null
+    },
+    {
+      "schedule": "XY4 asym",
+      "preparations": "|0>,|+>,|+i>",
+      "readout": "Z-only",
+      "verdict": "measurement-blind",
+      "signal": 0.0,
+      "witness": "Y"
+    },
+    {
+      "schedule": "XY4 asym",
+      "preparations": "|0>,|+>,|+i>",
+      "readout": "full",
+      "verdict": "visible",
+      "signal": 0.1,
+      "witness": null
+    }
+  ]
+}

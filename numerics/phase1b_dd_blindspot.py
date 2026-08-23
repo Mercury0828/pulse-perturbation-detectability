@@ -17,13 +17,13 @@ restores them) are KNOWN; PDET's contribution is the systematic per-direction bl
 prescription + honest finite-shot accounting.
 
 Run: python phase1b_dd_blindspot.py -> ../results/phase1/{phase1b_results.json, fig_dd_blindspot.png}
-
 """
 from __future__ import annotations
 import json, os
 import numpy as np
 from scipy.stats import norm
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+import figstyle; figstyle.apply()
 from pdet_core import Schedule, toggling_generator, response_map, singular_spectrum, benign_projector
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "results", "phase1"); os.makedirs(OUT, exist_ok=True)
@@ -126,15 +126,15 @@ def main():
 def _fig(res):
     sw = res["sweep"]; xs = [str(s["pi_frac"]) for s in sw]
     kZ = [s["K_Z_norm"] for s in sw]; mg = [s["margin"] for s in sw]
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4.5))
-    ax[0].bar(xs, kZ, color="C0"); ax[0].set_title("||K_Z|| vs pi-pulse position (0.5=symmetric echo=blind spot)")
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.8))
+    ax[0].bar(xs, kZ, color="C0"); ax[0].set_title("||K_Z|| vs pi-pulse position")
     ax[0].set_xlabel("pi-pulse fractional position"); ax[0].set_ylabel("||K_Z|| (toggling-frame integral)")
     nstars = [s["shot_cost_Nstar"] for s in sw]
     bars = [1e8 if n is None else n for n in nstars]
     ax[1].bar(xs, bars, color=["gray" if n is None else "C2" for n in nstars]); ax[1].set_yscale("log")
-    ax[1].set_title("finite-shot cost N* for Z-detuning (gray=INF: invisible to ALL measurements)")
+    ax[1].set_title("N* for Z-detuning (gray = invisible)")
     ax[1].set_xlabel("pi-pulse fractional position"); ax[1].set_ylabel("N* (log)")
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig_dd_blindspot.png"), dpi=120); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig_dd_blindspot")
 
 if __name__ == "__main__":
     main()

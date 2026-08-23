@@ -54,9 +54,37 @@ def sensitivity():
     tols=[1e-12,1e-10,1e-9,1e-8,1e-6,1e-4,1e-2]
     kdim={t:int(np.sum(sv<t*smax))*0+ (len(sv)-int(np.sum(sv>t*smax))) for t in tols}
     kdim={t:(M.shape[1]-int(np.sum(sv>t*smax))) for t in tols}
+    # leakage-truncation guard: the reported three-level model against a four-level one, same schedule,
+    # same dictionary, same access. A verdict that moved with the truncation would be a modelling artefact.
+    trunc = {}
+    for aug in ["free", "echo", "cpmg2"]:
+        row = {}
+        for d in (3, 4):
+            shd, dtd, _ = M_.transmon_x90_drag(augment=aug, nlev=d)
+            Vdd = M_.dictionary_1q(len(shd), nlev=d)
+            nmz = sorted(Vdd)
+            scd = Schedule(shd, dtd)
+            Zd = np.diag([1.0, -1.0] + [0.0] * (d - 2)).astype(complex)
+            Sd = []
+            for v in ([1, 0], [0, 1], [1, 1], [1, 1j]):
+                w = np.zeros(d, complex); w[:2] = v; w /= np.linalg.norm(w)
+                Sd.append(np.outer(w, w.conj()))
+            Kd = [toggling_generator(scd, Vdd[k]) for k in nmz]
+            Md = response_map(scd, Kd, Sd, [Zd])
+            svd_ = singular_spectrum(Md)
+            row["d%d" % d] = {"dim_ker_M": int(kernel_dim(Md)),
+                              "singular_spectrum": [float(x) for x in svd_]}
+        s3 = np.array(row["d3"]["singular_spectrum"]); s4 = np.array(row["d4"]["singular_spectrum"])
+        rel = float(np.max(np.abs(s4 - s3) / np.maximum(np.abs(s3), 1e-30)))
+        row["max_rel_change"] = rel
+        row["verdict_stable"] = bool(row["d3"]["dim_ker_M"] == row["d4"]["dim_ker_M"])
+        trunc[aug] = row
     return {"singular_spectrum":[float(x) for x in sv],"rank_tol_sweep":{f"{t:.0e}":kdim[t] for t in tols},
+            "leakage_truncation": trunc,
             "note":"kernel dimension is stable across 8 orders of rank tolerance (1e-12..1e-4); the singular "
-                   "spectrum has a clear gap, so the verdict is not a tolerance artefact."}
+                   "spectrum has a clear gap, so the verdict is not a tolerance artefact. Adding a fourth "
+                   "transmon level leaves every kernel dimension unchanged and moves the singular spectrum by "
+                   "the reported relative amount, so the three-level truncation is not carrying the verdict."}
 
 def main():
     res={"twoq":twoq_verdict(),"sensitivity":sensitivity()}
@@ -66,32 +94,34 @@ def main():
     labels={"amp_c":"amp (ctrl)","det_c":"detuning (ctrl)","ctk":"crosstalk $IX$","spec":"spectator $ZZ$","det_t":"detuning (tgt)"}
     order=["amp_c","det_c","ctk","spec","det_t"]
     ro_keys=list(by); floor=1e-10; blind_thr=1e-9
-    fig,ax=plt.subplots(1,1,figsize=(7,3.3))
+    fig,ax=plt.subplots(1,1,figsize=figstyle.figsize(figstyle.SINGLE_PANEL_FRAC,2.9))
     xpos=np.arange(len(order)); w=0.38
     cols={ro_keys[0]:"#9ecae1",ro_keys[1]:"#3182bd"}
     for i,rk in enumerate(ro_keys):
         raw=[by[rk]["margin"][k] for k in order]
         vals=[max(v,floor) for v in raw]
-        ax.bar(xpos+(i-0.5)*w,vals,w,label=rk,color=cols[rk],log=True,edgecolor="k",linewidth=0.4)
+        ax.bar(xpos+(i-0.5)*w,vals,w,label=rk,color=cols[rk],log=True,edgecolor="k",linewidth=0.4,
+               hatch=("" if i==0 else "//"))
         # a readout-blind direction has margin ~0; label the (necessarily zero-height) bar in its own
         # empty column so the gap is not mistaken for a missing bar -- it is a genuine gamma=0 verdict.
         for j,v in enumerate(raw):
             if v < blind_thr:
-                ax.annotate("blind\n$\\gamma{\\approx}0$",(xpos[j]+(i-0.5)*w,1e-4),
-                            ha="center",va="center",fontsize=9,color="#b22222",fontweight="bold")
+                ax.annotate("blind: $\\gamma{\\approx}0$",(xpos[j]+(i-0.5)*w,1e-6),
+                            ha="center",va="center",rotation=90,
+                            fontsize=figstyle.ANNOT_PT,color="#b22222",fontweight="bold")
     ax.axhline(blind_thr,ls="--",c="0.4",lw=1)
-    ax.set_xticks(xpos); ax.set_xticklabels([labels[k] for k in order],fontsize=12,rotation=12)
+    ax.set_xticks(xpos); ax.set_xticklabels([labels[k] for k in order],rotation=20,ha="right")
     ax.set_ylabel("detection margin $\\gamma$ (log)"); ax.set_ylim(floor,30)
-    ax.legend(title="readout set",fontsize=11,title_fontsize=11,ncol=2,
-              loc="upper center",bbox_to_anchor=(0.5,-0.22),frameon=True)
-    fig.savefig(os.path.join(PD,"fig_2q_cr.png"),dpi=130,bbox_inches="tight"); plt.close(fig)
+    ax.legend(title="readout set",ncol=2,
+              loc="upper center",bbox_to_anchor=(0.5,-0.34),frameon=True)
+    figstyle.save(fig, PD, "fig_2q_cr", png_preview=False)
     # sensitivity figure: singular spectrum with the rank-tol band
-    fig,ax=plt.subplots(1,1,figsize=(7,2.9)); sv=res["sensitivity"]["singular_spectrum"]
+    fig,ax=plt.subplots(1,1,figsize=figstyle.figsize(figstyle.SINGLE_PANEL_FRAC,2.4)); sv=res["sensitivity"]["singular_spectrum"]
     ax.semilogy(range(1,len(sv)+1),np.array(sv)/sv[0]+1e-18,"o-")
     ax.axhspan(1e-12,1e-6,alpha=0.15,color="gray",label="stable band: dim ker constant (1e-12..1e-6)")
     ax.set_xlabel("singular value index"); ax.set_ylabel("normalized singular value (log)")
-    ax.set_title("Sensitivity: clear spectral gap, verdict stable across rank tolerance"); ax.legend(fontsize=9)
-    fig.tight_layout(); fig.savefig(os.path.join(PD,"fig_sensitivity.png"),dpi=130); plt.close(fig)
+    ax.legend()
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig_sensitivity")
     json.dump(res,open(os.path.join(OUT,"twoq_sensitivity.json"),"w"),indent=2,default=str)
     print("2q free verdict (computational):",res["twoq"]["free"]["by_readout"]["computational {ZI,IZ,ZZ}"]["verdict"])
     print("2q free dim ker (computational):",res["twoq"]["free"]["by_readout"]["computational {ZI,IZ,ZZ}"]["dim_ker_M"])

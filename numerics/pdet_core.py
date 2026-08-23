@@ -38,6 +38,15 @@ def qutrit_ops():
     I3 = np.eye(3, dtype=complex)
     return I3, a, ad, n
 
+def transmon_ops(d=3):
+    """Truncated transmon ladder at d levels: annihilation a, number n, identity. d=3 is the reported model;
+    d=4 exists so the leakage-truncation guard can compare the two."""
+    a = np.zeros((d, d), dtype=complex)
+    for k in range(1, d):
+        a[k - 1, k] = np.sqrt(k)
+    ad = a.conj().T
+    return np.eye(d, dtype=complex), a, ad, ad @ a
+
 def dag(A): return A.conj().T
 def comm(A, B): return A @ B - B @ A
 def ketbra(i, j, d):
@@ -186,8 +195,65 @@ def gamma_margin(M, benign_idx=None, attack_cols=None):
     MA = M if attack_cols is None else M[:, attack_cols]
     PM = P @ MA
     s = singular_spectrum(PM)
-    gamma = float(s[-1]) if s.size and PM.shape[1] <= PM.shape[0] else (float(s[-1]) if s.size else 0.0)
+    # the margin is an infimum over unit attack directions. With more attack directions than accessible signal
+    # components the map has a guaranteed null direction, so the infimum is zero however large sigma_min is.
+    if PM.shape[1] > PM.shape[0]:
+        return 0.0, s
+    gamma = float(s[-1]) if s.size else 0.0
     return gamma, s
+
+def gamma_margin_whitened(M, Sigma, benign_idx=None, attack_cols=None):
+    """
+    The Mahalanobis margin of Eq. (11): WHITEN FIRST, then project out the benign subspace.
+
+        gamma_Sigma = sigma_min( P_B^perp Sigma^{-1/2} M[:, attack_cols] ),
+
+    with the projector built in the whitened coordinates, because the benign subspace an experiment can
+    actually absorb is the one that is benign AFTER the noise is accounted for. Sigma is the per-setting
+    covariance of the response vector, given either as a 1-D vector of variances or as a full matrix.
+
+    When Sigma = V * Identity the whitening is a scalar, it commutes with the projection, and this returns
+    gamma / sqrt(V) exactly, which is the isotropic convention the main sections quote. The self-test below
+    checks that identity, so the general path and the isotropic one cannot drift apart.
+    """
+    Sigma = np.asarray(Sigma, dtype=float)
+    if Sigma.ndim == 1:
+        W = np.diag(1.0 / np.sqrt(Sigma))
+    else:
+        lam, Q = np.linalg.eigh(Sigma)
+        if np.min(lam) <= 0:
+            raise ValueError("Sigma must be positive definite")
+        W = Q @ np.diag(lam ** -0.5) @ dag(Q)
+    Mw = W @ np.asarray(M, dtype=complex)
+    P = benign_projector(Mw, benign_idx or [])
+    MA = Mw if attack_cols is None else Mw[:, attack_cols]
+    sv = singular_spectrum(P @ MA)
+    if MA.shape[1] > MA.shape[0]:
+        return 0.0, sv
+    return (float(sv[-1]) if sv.size else 0.0), sv
+
+def packing_coherence(M, Sigma, benign_idx=None, cols=None):
+    """
+    The coherence rho = max_{i != j} <mu_i, mu_j> / gamma_Sigma^2 of the whitened benign-projected signals,
+    which is the quantity the composite lower bound of App. C carries as its hypothesis. The packing there has a
+    common length gamma_Sigma, so rho is the worst cosine between two distinct members.
+    """
+    Sigma = np.asarray(Sigma, dtype=float)
+    W = np.diag(1.0 / np.sqrt(Sigma)) if Sigma.ndim == 1 else None
+    if W is None:
+        lam, Q = np.linalg.eigh(Sigma); W = Q @ np.diag(lam ** -0.5) @ dag(Q)
+    Mw = W @ np.asarray(M, dtype=complex)
+    P = benign_projector(Mw, benign_idx or [])
+    A = np.real(P @ (Mw if cols is None else Mw[:, cols]))
+    nrm = np.linalg.norm(A, axis=0)
+    live = nrm > 1e-12 * (nrm.max() if nrm.size else 1.0)
+    A, nrm = A[:, live], nrm[live]
+    if A.shape[1] < 2:
+        return 0.0
+    A = A / nrm                       # the packing carries a common length; rho is the worst cosine on it
+    G = A.T @ A
+    np.fill_diagonal(G, -np.inf)
+    return float(np.max(G))
 
 # ----------------------------------------------------------------------------- exact perturbed signal (for A1 + eta2)
 def perturbed_signal(sched_builder, theta, dictionary_Vsteps, states, obs):
@@ -236,12 +302,16 @@ def a1_finite_diff_check(sched_builder, sched: Schedule, dictionary_Vsteps, stat
 def eta2_for_direction(sched_builder, theta, dictionary_Vsteps, states, obs, benign_P=None, eps=1e-3):
     """
     Second-order accessible signal magnitude for a (first-order-invisible) direction theta.
-    Central 2nd difference: Q ≈ (g(eps)+g(-eps)-2 g(0))/eps^2, flattened; eta2 = ||P_B^perp vec(Q)||.
+    Eq. (9) defines Q as the COEFFICIENT of the quadratic term of the accessible response, i.e.
+    g(theta) = g(0) + L theta + Q(theta,theta) + ..., so Q = g''(0)/2. The central second difference
+    (g(eps)+g(-eps)-2 g(0))/eps^2 evaluates g''(0), hence the factor 1/2 below; without it eta2 would
+    be twice the quantity the manuscript defines and a second-order shot cost four times too small.
+    eta2 = ||P_B^perp vec(Q)||.
     """
     g0 = perturbed_signal(sched_builder, 0 * theta, dictionary_Vsteps, states, obs)
     gp = perturbed_signal(sched_builder, eps * theta, dictionary_Vsteps, states, obs)
     gm = perturbed_signal(sched_builder, -eps * theta, dictionary_Vsteps, states, obs)
-    Q = (gp + gm - 2 * g0) / (eps ** 2)
+    Q = 0.5 * (gp + gm - 2 * g0) / (eps ** 2)
     v = Q.reshape(-1)
     if benign_P is not None:
         v = benign_P @ v
@@ -284,4 +354,15 @@ if __name__ == "__main__":
     print(f"  M2 shape {M2.shape}, singular spectrum = {np.round(singular_spectrum(M2),4).tolist()}")
     print(f"  dim ker M2 = {kernel_dim(M2)}")
     assert max_rel < 1e-4, "A1 CHECK FAILED - response map disagrees with exact propagation."
+    # (3) the whitened margin must reduce to the isotropic one it is quoted as, or the two conventions in the
+    # manuscript would be free to drift apart.
+    V = 0.37
+    g_iso, _ = gamma_margin(M2, benign_idx=[0], attack_cols=[1, 2])
+    g_wht, _ = gamma_margin_whitened(M2, np.full(M2.shape[0], V), benign_idx=[0], attack_cols=[1, 2])
+    rel = abs(g_wht - g_iso / np.sqrt(V)) / max(abs(g_iso / np.sqrt(V)), 1e-30)
+    print(f"\n whitened margin vs isotropic: gamma_Sigma={g_wht:.6f} vs gamma/sqrt(V)={g_iso/np.sqrt(V):.6f}"
+          f"  rel {rel:.2e}  (require < 1e-10)")
+    assert rel < 1e-10, "whitened margin does not reduce to the isotropic convention."
+    rho = packing_coherence(M2, np.full(M2.shape[0], V), [0])
+    print(f"  packing coherence of the benign-projected dictionary rho = {rho:.4f}")
     print("\n A1 PASSED. Core response map validated against exact propagation.")

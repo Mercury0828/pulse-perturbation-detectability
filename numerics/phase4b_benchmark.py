@@ -1,10 +1,10 @@
 """
-PDET Phase-4b -- R-O6 evaluation hardening (from the Phase-4 eval audit, reviews/phase4_eval_audit.md):
+PDET Phase-4b -- evaluation hardening:
   (A) UNKNOWN/COMPOSITE discovery with multiple-testing correction (FWER) -- moves beyond known-witness calibration.
   (B) EQUAL-BUDGET benchmark: PDET-guided vs full-process-tomography-equivalent, under the production schedule.
   (C) PROTECTION <-> DETECTABILITY trade-off (cost of breaking the schedule), with a background-noise model.
 
-Honest thesis (narrowed per audit): PDET does NOT beat an oracle Ramsey on a single known error. Its value is the
+Thesis: PDET does NOT beat an oracle Ramsey on a single known error. Its value is the
 SYSTEMATIC restricted-access layer: (i) the kernel identifies, for FREE (no shots), which candidate error
 directions are undiscoverable under the current schedule+readout; (ii) it prescribes the minimal control change to
 expose a targeted blind direction; (iii) honest multiple-testing + protection cost.
@@ -16,6 +16,7 @@ import json, os
 import numpy as np
 from scipy.stats import norm
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+import figstyle; figstyle.apply()
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "results", "phase4"); os.makedirs(OUT, exist_ok=True)
 SEED = 20260628
@@ -127,21 +128,23 @@ def main():
     res["B_equal_budget_vs_tomography"] = partB_equal_budget()
     res["C_protection_detectability_tradeoff"] = partC_tradeoff()
     # figure: trade-off Pareto + discovery power
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4.5))
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.8))
     pts = res["C_protection_detectability_tradeoff"]["sweep"]
     ax[0].plot([p["protection_retained"] for p in pts], [p["detectability(margin)"] for p in pts], "o-")
-    for p in pts: ax[0].annotate(f"f={p['f']}", (p["protection_retained"], p["detectability(margin)"]), fontsize=7)
+    for p in pts: ax[0].annotate(f"f={p['f']}", (p["protection_retained"], p["detectability(margin)"]), fontsize=figstyle.ANNOT_PT)
     ax[0].set_xlabel("DD protection retained"); ax[0].set_ylabel("target detectability (margin)")
-    ax[0].set_title("Fig 4: protection <-> detectability trade-off (cost of breaking the schedule)")
+    ax[0].set_title("protection vs detectability")
     A = res["A_discovery_multiple_testing"]
     names = list(A["power_under_production_echo"])
     x = np.arange(len(names))
-    ax[1].bar(x-0.2, [A["power_under_production_echo"][n] for n in names], 0.4, label="under production echo")
-    ax[1].bar(x+0.2, [A["power_after_PDET_control_mod_f0.33"][n] for n in names], 0.4, label="after PDET control mod")
+    ax[1].bar(x-0.2, [A["power_under_production_echo"][n] for n in names], 0.4, label="under production echo",
+              edgecolor="k", linewidth=0.4)
+    ax[1].bar(x+0.2, [A["power_after_PDET_control_mod_f0.33"][n] for n in names], 0.4, label="after PDET control mod",
+              hatch="//", edgecolor="k", linewidth=0.4)
     ax[1].axhline(0.05, ls=":", c="gray", label="alpha=0.05 (FWER)")
-    ax[1].set_xticks(x); ax[1].set_xticklabels(names, fontsize=8); ax[1].set_ylabel("discovery power (FWER-controlled)")
-    ax[1].set_title("Fig 5: multiple-testing discovery; blind dirs need the control knob"); ax[1].legend(fontsize=7)
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig4_5_benchmark.png"), dpi=120); plt.close(fig)
+    ax[1].set_xticks(x); ax[1].set_xticklabels(names); ax[1].set_ylabel("discovery power (FWER-controlled)")
+    ax[1].set_title("FWER-controlled discovery"); ax[1].legend()
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig4_5_benchmark")
     with open(os.path.join(OUT, "phase4b_results.json"), "w") as f: json.dump(res, f, indent=2, default=str)
     # console
     print("\n===== Phase-4b R-O6 hardening =====")

@@ -115,18 +115,35 @@ def main():
     res["psd_protection"] = part1_psd_protection()
     res["nuisance_handling"] = part2_nuisance()
     # figure: PSD-based Pareto + nuisance FWER
-    fig, ax = plt.subplots(1, 2, figsize=(12, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.5))
     pts = res["psd_protection"]["pareto"]
     ax[0].plot([p["protection_factor_vs_free"] for p in pts], [p["detectability_margin"] for p in pts], "o-")
-    for p in pts: ax[0].annotate(f"f={p['f']}", (p["protection_factor_vs_free"], p["detectability_margin"]), fontsize=11)
+    # flip the label to the left half-way along the curve so the last points do not
+    # run off the axis; the earlier version clipped "f=0.45" and "f=0.5".
+    _n = len(pts)
+    for _i, p in enumerate(pts):
+        _left = _i >= _n // 2
+        _dy = -9 if _i == 0 else 4          # the first point sits level with the top y tick
+        ax[0].annotate(f"f={p['f']}", (p["protection_factor_vs_free"], p["detectability_margin"]),
+                       textcoords="offset points", xytext=(-4 if _left else 5, _dy),
+                       ha="right" if _left else "left", fontsize=figstyle.ANNOT_PT)
+    ax[0].margins(x=0.14, y=0.12)
     ax[0].set_xlabel("DD protection factor vs free (1/f PSD, filter-function)"); ax[0].set_xscale("log")
     ax[0].set_ylabel("target detectability margin")
+    # A log axis over roughly one decade puts 2,3,4,6 x 10^0 on top of each other in
+    # mantissa-exponent form; plain integers at chosen decades stay legible at 8 pt.
+    from matplotlib.ticker import FixedLocator, FuncFormatter, NullLocator
+    xs = [p["protection_factor_vs_free"] for p in pts]
+    ticks = [t for t in (1, 2, 5, 10, 20) if min(xs) / 1.6 <= t <= max(xs) * 1.6]
+    ax[0].xaxis.set_major_locator(FixedLocator(ticks))
+    ax[0].xaxis.set_minor_locator(NullLocator())
+    ax[0].xaxis.set_major_formatter(FuncFormatter(lambda v, _: ("%g" % v)))
     nu = res["nuisance_handling"]
     ax[1].bar(["naive\n(unknown drift)", "PDET P_Bperp\n(projected)"],
               [nu["FWER_naive_with_unknown_drift"], nu["FWER_with_benign_projection_P_Bperp"]], color=["C3", "C2"])
-    ax[1].axhline(0.05, ls="--", c="gray", label="alpha=0.05"); ax[1].set_ylabel("discovery FWER under nuisance drift")
+    ax[1].axhline(0.05, ls="--", c="gray", label="alpha=0.05"); ax[1].set_ylabel("discovery FWER")
     ax[1].legend()
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig7_8_noise_nuisance.png"), dpi=120); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig7_8_noise_nuisance")
     with open(os.path.join(OUT, "phase4d_results.json"), "w") as f: json.dump(res, f, indent=2, default=str)
     print("\n===== Phase-4d noise PSD + nuisance =====")
     print(" PSD protection (1/f), chi_free =", round(res["psd_protection"]["chi_free"], 4))

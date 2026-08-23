@@ -4,7 +4,7 @@ Usage: python run_all.py   (seed 20260628 fixed in every module; ~minutes total)
 Each module writes its artifacts under ../results/ ; this driver runs them in dependency order and reports
 pass/fail. The A1 correctness gate (pdet_core self-test) runs FIRST and must pass before anything is trusted.
 """
-import importlib, sys, os, time
+import importlib, subprocess, sys, os, time
 sys.path.insert(0, os.path.dirname(__file__))
 
 MODULES = [
@@ -24,8 +24,18 @@ MODULES = [
     ("selfcheck_dd_idle_usecase", "self-check: genuine non-contrived DD-on-idle use case"),
     ("selfcheck_baseline_headtohead", "self-check: equal-budget baseline head-to-head"),
     ("selfcheck_scalability", "self-check L6: locality-scaled scalability"),
-    ("selfcheck_echoed_cr_usecase", "self-check: echoed-CR probe (honest negative)"),
+    ("selfcheck_echoed_cr_usecase", "self-check: echoed-CR probe (which lever exposes the hidden ZI)"),
     ("selfcheck_model_mismatch", "self-check: model-mismatch sensitivity of the verdict"),
+    ("kernel_factorization", "ker K vs ker M / ker K: the two obstructions, per dictionary"),
+    ("pulsewidth_sensitivity", "how far the frozen predictions depend on the assumed pulse width"),
+    ("fig_pulsewidth_suppression", "blind-axis suppression against pulse width (the finite-pulse figure)"),
+    ("open_system_margin", "M_open vs M, covariance-aware cost, S(omega)-dependence of protection"),
+    ("algorithm_constraints", "target-preserving edits; preparation-blind vs measurement-blind"),
+    ("vz_vs_continuous", "virtual-Z frame injection vs a continuous physical detuning"),
+    ("allocation_nuisance", "when a single witness setting is (and is not) the optimal allocation"),
+    ("fig_2q_and_sensitivity", "2q CR per-direction margins + rank-tolerance sensitivity (paper figs)"),
+    ("fig_detection_and_t2", "detection-error curves and the T2 sweep"),
+    ("sync_paper_figures", "copy the manuscript-bound vector PDFs into paper/figures/"),
 ]
 
 def run():
@@ -35,9 +45,9 @@ def run():
         try:
             m = importlib.import_module(mod)
             if mod == "pdet_core":
-                importlib.reload(m)  # its self-test runs under __main__; call main-equivalent
-                # pdet_core self-test only runs under __main__; re-exec it
-                os.system(f"{sys.executable} {os.path.join(os.path.dirname(__file__), 'pdet_core.py')}")
+                # the A1 self-test runs under __main__, so re-exec it and hold the driver to its exit status
+                subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "pdet_core.py")],
+                               check=True)
             else:
                 m.main()
             ok = True; err = ""
@@ -51,4 +61,6 @@ def run():
     return results
 
 if __name__ == "__main__":
-    run()
+    res = run()
+    # a regeneration run that lost a module must not look like a success to a script or a CI job
+    sys.exit(0 if all(ok for _, ok, _, _ in res) else 1)

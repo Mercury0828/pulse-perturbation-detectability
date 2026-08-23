@@ -30,6 +30,7 @@ import models as M_
 OUT = os.path.join(os.path.dirname(__file__), "..", "results", "phase0")
 os.makedirs(OUT, exist_ok=True)
 RTOL = 1e-9
+A1_REQUIREMENT = 1e-4   # the gate the manuscript quotes; a model that misses it stops the run
 SEED = 20260628
 
 # FROZEN thresholds (phase0_spec.md Â§5)
@@ -54,6 +55,10 @@ def analyze(step_hams, dt, Vdict, S, O, benign_names, label, a1_builder):
     # A1 gate on the real model
     sched_tmp = Schedule(step_hams, dt)
     max_rel, _ = a1_finite_diff_check(a1_builder, sched_tmp, Vlists, S, O, eps=1e-6, ntest=4, seed=7)
+    # the correctness gate is a GATE. A model whose closed form disagrees with exact propagation stops the run
+    # rather than recording a large number in the archive that nothing reads.
+    if not np.isfinite(max_rel) or max_rel > A1_REQUIREMENT:
+        raise AssertionError("A1 correctness gate failed on %s: %.3e > %.1e" % (label, max_rel, A1_REQUIREMENT))
     sched, K_list, M = build_M(step_hams, dt, Vlists, S, O)
     s = singular_spectrum(M)
     Mop = float(s[0]) if s.size else 0.0
@@ -133,10 +138,10 @@ def finite_shot_detection(M, names, attack_dir, benign_dir, N_grid, n_rep=40, sh
 # ----------------------------------------------------------------------------- stim operator-spreading probe
 def stim_spreading_probe(seed=SEED):
     """For n=2..5, evolve a single-qubit Pauli (Z on qubit 0) through random Clifford layers; record weight."""
-    try:
-        import stim
-    except Exception as e:
-        return {"error": f"stim unavailable: {e}"}
+    # Hard requirement: the operator-spreading boundary is a claim the manuscript
+    # makes, so a missing dependency must stop the run rather than be recorded as
+    # an {"error": ...} entry that later reads as a result.
+    import stim
     rng = np.random.default_rng(seed)
     out = {}
     for nq in [2, 3, 4, 5]:
@@ -326,7 +331,12 @@ def _evaluate_go_no_go(r):
     knob_kernel_shrink = max((a["dim_ker_shrink"] for lvl in r["control_knob_1q"].values()
                               for a in lvl["augmentations"].values()), default=0)
     # (3) gamma >= gamma_min for a knob-exposed direction (best gamma_norm achieved by control under any access)
-    best_gamma = max(oneq[s][l]["gamma_norm"] for s in oneq for l in ["Z", "ZX", "rich"])
+    # Criterion (iv) is applied exactly as frozen, on the single-qubit family it was written against. The
+    # cross-resonance value is reported alongside it for information and is NOT aggregated into the test:
+    # re-defining the criterion after seeing the numbers would be moving the threshold.
+    best_gamma_1q = max(oneq[s][l]["gamma_norm"] for s in oneq for l in ["Z", "ZX", "rich"])
+    best_gamma_2q = max(v["gamma_norm"] for v in r["cr_2q"].values())
+    best_gamma = best_gamma_1q
     gamma_ok = best_gamma >= GAMMA_MIN_NORMALIZED
     # (4) eta2 classification present (mix of 2nd-order visible/invisible) -> first/second-order honesty satisfied
     eta_idle = oneq["idle"]["Z"]["kernel_eta2"]
@@ -346,10 +356,16 @@ def _evaluate_go_no_go(r):
         "ker_nontrivial_realistic_access": {"pass": bool(nontrivial),
             "detail": f"Z-only dim ker M: idle={ker_idle_Z}, drag={ker_drag_Z}, m={m} (0<idle<m => nontrivial)"},
         "control_knob_passes": {"pass": bool(knob_pass),
-            "detail": f"max kernel-shrink={knob_kernel_shrink} (1q idle->control); 2q-echo inert={knob2_inert}. "
+            "detail": f"max kernel-shrink={knob_kernel_shrink} (1q idle->control); the 2q echo is not an "
+                      f"EXPOSING knob (passes_knob={not knob2_inert}) because it acts in the opposite direction, "
+                      f"moving the control detuning INTO ker A, which is the two-qubit result of sec:eval-2q. "
                       "NB Z-only gamma-ratio degenerate (base~0): kernel-shrink is the load-bearing evidence."},
         "gamma_ge_gamma_min_for_exposed_direction": {"pass": bool(gamma_ok),
-            "detail": f"best gamma_norm achieved (any schedule/access)={best_gamma:.3f} vs gamma_min={GAMMA_MIN_NORMALIZED}. "
+            "maps_to": "YELLOW(a)",
+            "detail": f"best 1q gamma_norm={best_gamma_1q:.3f} vs gamma_min={GAMMA_MIN_NORMALIZED} -> FAILS, which "
+                      f"spec section 8(iv) maps to YELLOW(a), a caution surfaced at the human gate. For "
+                      f"information only, and NOT aggregated into the test, the cross-resonance model reaches "
+                      f"{best_gamma_2q:.3f}. "
                       "Worst-case fully-invisible directions keep gamma=0 (that IS the characterized kernel, not vacuity)."},
         "eta2_first_second_order_honesty": {"pass": bool(eta2_mix),
             "detail": "kernel directions classified by eta2 (some 2nd-order visible, some not); NO all-order claim."},
@@ -361,20 +377,25 @@ def _evaluate_go_no_go(r):
     }
     # Overall: GO iff ker nontrivial + knob passes + rubric not RED + gamma_ok for exposed dir.
     go = nontrivial and knob_pass and (rubric_verdict != "RED") and gamma_ok
-    overall = "GO (conditional)" if go else "NO-GO"
-    summary = ("Engineering story ALIVE but the delta is NARROWER than the full-workflow framing: the visibility "
-               "MAP is the observable-Jacobian/observability-rank tool (NOT novel); the genuine, rubric-surviving "
-               "delta is the CONTROL-DESIGN KNOB (shrinks ker M / raises gamma by changing U0(t)) + honest "
-               "finite-shot. 1q knob works (kernel 3->1 under Z-only); 2q-echo knob inert here; operator spreading "
-               "real => scalable regime needs bounded-growth caveat. Recommend GO conditional on honest scoping "
-               "(lead with the control knob + finite-shot; frame the map as a known tool), a human-gate scope call.")
+    # Section 9 is explicit: any failed frozen threshold is a NO-GO that maps to the YELLOW/RED of section 3.2
+    # and is surfaced at the Phase-0.5 human gate. It is not a pass, and it is not re-derived here.
+    failed = [k for k, v in findings.items() if isinstance(v, dict) and v.get("pass") is False]
+    overall = "GO (conditional)" if go else "NO-GO -> YELLOW(a) at the Phase-0.5 human gate"
+    summary = ("Engineering story alive, with the delta narrower than a full-workflow framing would suggest: the "
+               "visibility MAP is the observable-Jacobian/observability-rank tool and is not novel; the "
+               "rubric-surviving delta is the CONTROL-DESIGN KNOB (shrinks ker M / raises gamma by changing "
+               "U0(t)) plus honest finite-shot accounting. The 1q knob works (kernel 3->1 under Z-only). The 2q "
+               "echo runs the lever the other way, moving the control detuning into ker A rather than out of it, "
+               "which is the two-qubit result the paper reports. Operator spreading is real, so the scalable "
+               "regime carries a bounded-growth assumption. GO conditional on honest scoping: lead with the "
+               "control knob and the finite-shot cost, and frame the map as a known tool.")
     return {"criteria": findings, "overall": overall, "go_conditional": bool(go), "summary": summary,
             "honesty": "numerics are de-risk evidence, not a proof. Worst-case inputs only."}
 
 def _make_figures(results, oneq, N_grid, FA_d, MISS_d, FA_s, MISS_s, spreading):
     scheds = ["idle", "drag", "echo", "cpmg2"]; levels = ["Z", "ZX", "rich"]
     # fig1: dim ker M and gamma_norm across schedule x access (the A4 + knob picture)
-    fig, ax = plt.subplots(1, 2, figsize=(12, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.4))
     width = 0.25
     x = np.arange(len(scheds))
     for i, lvl in enumerate(levels):
@@ -388,25 +409,25 @@ def _make_figures(results, oneq, N_grid, FA_d, MISS_d, FA_s, MISS_s, spreading):
     ax[1].axhline(GAMMA_MIN_NORMALIZED, ls="--", c="r", label=f"gamma_min={GAMMA_MIN_NORMALIZED}")
     ax[1].set_xticks(x); ax[1].set_xticklabels(scheds); ax[1].set_ylabel("detection margin gamma_norm")
     ax[1].legend()
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig1_kernel_gamma_1q.png"), dpi=120); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig1_kernel_gamma_1q")
 
     # fig2: finite-shot
-    fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+    fig, ax = plt.subplots(1, 1, figsize=figstyle.figsize(figstyle.SINGLE_PANEL_FRAC, 2.6))
     ax.loglog(N_grid, np.array(MISS_d) + 1e-3, "o-", label="miss (direct)")
     ax.loglog(N_grid, np.array(MISS_s) + 1e-3, "s-", label="miss (shadow 3x)")
     ax.loglog(N_grid, np.array(FA_d) + 1e-3, "^--", label="false-alarm (direct)")
     ax.set_xlabel("shots N"); ax.set_ylabel("error rate"); ax.set_title("1q finite-shot detection")
-    ax.legend(); fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig2_finite_shot_1q.png"), dpi=120); plt.close(fig)
+    ax.legend(); fig.tight_layout(); figstyle.save(fig, OUT, "fig2_finite_shot_1q")
 
     # fig3: operator spreading (2q CR free vs echo) â€” mean weight-2 fraction across K_j
-    fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+    fig, ax = plt.subplots(1, 1, figsize=figstyle.figsize(figstyle.SINGLE_PANEL_FRAC, 2.6))
     for aug in ["free", "echo"]:
         prof = spreading[aug]
         w2 = [prof[name].get(2, 0.0) for name in prof]
         ax.plot(range(len(w2)), w2, "o-", label=f"{aug}: weight-2 frac")
     ax.set_xlabel("perturbation direction index"); ax.set_ylabel("weight-2 Pauli fraction of K_j")
     ax.set_title("2q CR operator spreading"); ax.legend()
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig3_spreading_2q.png"), dpi=120); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig3_spreading_2q")
 
 def _print_summary(r):
     print("\n================ PDET Phase-0 de-risk summary ================")

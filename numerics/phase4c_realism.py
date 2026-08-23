@@ -21,7 +21,9 @@ import json, os
 import numpy as np
 from scipy.stats import norm
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-from pdet_core import Schedule, toggling_generator, response_map, singular_spectrum, benign_projector
+import figstyle; figstyle.apply()
+from pdet_core import (Schedule, toggling_generator, response_map, singular_spectrum, benign_projector,
+                       packing_coherence)
 import models as M_
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "results", "phase4"); os.makedirs(OUT, exist_ok=True)
@@ -35,7 +37,10 @@ def part1_Keff():
     """Use the 2q CR model + computational readout (a realistic restricted-access instance with attacks visible)."""
     def kron(a, b): return np.kron(a, b)
     S = [st(np.kron(c, t)) for c in ([1, 0], [0, 1], [1, 1]) for t in ([1, 0], [0, 1], [1, 1])]
-    O = [kron(Z, I), kron(I, Z), kron(Z, Z), kron(X, I), kron(I, X)]
+    # ONE access for the whole object. The two-qubit verdict of sec:eval-2q is stated under the computational
+    # readout, so the packing, the attack-subspace dimension, the singular values and the coherence are all
+    # computed there rather than mixing budgets between the count and the coherence.
+    O = [kron(Z, I), kron(I, Z), kron(Z, Z)]                            # computational readout
     sh, dt, _ = M_.cr_zx90(augment="free", crosstalk=True); NS = len(sh)
     Vd = M_.dictionary_2q(NS); names = list(Vd); Vl = [Vd[k] for k in names]
     sc = Schedule(sh, dt); K = [toggling_generator(sc, v) for v in Vl]
@@ -47,6 +52,10 @@ def part1_Keff():
     sv = singular_spectrum(Msig)
     r = int(np.sum(sv > 1e-9 * sv[0]))           # attack-signal subspace dimension
     sigma_max = float(sv[0]); sigma_min = float(sv[r-1]) if r else 0.0
+    # the coherence the composite lower bound of App. C carries as its hypothesis, on the dictionary itself
+    rho_dict = float(packing_coherence(Mm, np.ones(Mm.shape[0]), benign_idx=bidx, cols=aidx))
+    # the benign-span dimension, one of the six failure-mode guards
+    dim_span_benign = int(np.sum(singular_spectrum(Mm[:, bidx]) > 1e-9 * sigma_max))
     # numerical packing count of the unit attack sphere at relative scale gamma_rel, mapped through Msig
     rng = np.random.default_rng(SEED)
     def packing_count(gamma_rel, ntrial=4000):
@@ -58,14 +67,22 @@ def part1_Keff():
                 pts.append(y)
         return len(pts)
     counts = {gr: packing_count(gr) for gr in [0.5, 0.3, 0.2, 0.1]}
+    # the packing is taken on the UNIT SPHERE of the r-dimensional signal space (y is normalised
+    # above), whose covering number scales with exponent r-1, not r.
+    _x = np.log([1.0 / g for g in counts]); _y = np.log(list(counts.values()))
+    fit_exp = float(np.polyfit(_x, _y, 1)[0])
     return {"attack_dirs": [names[i] for i in aidx], "attack_signal_subspace_dim_r": r,
+            "dictionary_coherence_rho": round(rho_dict, 6),
+            "readout": "computational {ZI,IZ,ZZ}",
+            "dim_span_benign": dim_span_benign,
+            "packing_exponent_expected": r - 1, "packing_exponent_fitted": round(fit_exp, 3),
             "sigma_max": round(sigma_max, 3), "sigma_min_attack": round(sigma_min, 3),
             "numerical_packing_count_vs_rel_scale": counts,
-            "log_Keff_bound": f"~ r*log(sigma/gamma) = {r}*log(sigma/gamma)",
-            "verdict": (f"attack-signal subspace dim r={r} (a handful). Composite penalty log K_eff ~ r*log(sigma/"
-                        f"gamma) is a SMALL factor; the two-point sharp N=V(z+z)^2/gamma^2 essentially governs for "
-                        f"a realistic finite dictionary. Packing counts (a few hundred at gamma_rel=0.1) match "
-                        f"K_eff ~ (1/gamma_rel)^r with small r.")}
+            "log_Keff_bound": f"~ (r-1)*log(sigma/gamma) = {r-1}*log(sigma/gamma)",
+            "verdict": (f"attack-signal subspace dim r={r}; the packing lives on its unit sphere, so K_eff ~ "
+                        f"(1/gamma_rel)^(r-1) with r-1={r-1} (fitted exponent {fit_exp:.2f}). Composite penalty "
+                        f"log K_eff ~ (r-1)*log(sigma/gamma) is a SMALL factor; the two-point sharp "
+                        f"N=V(z+z)^2/gamma^2 essentially governs for a realistic finite dictionary.")}
 
 # ----------------------------------------------------------------------------- (2) operational invisibility
 def two_seg_signal(V, f, has_pi, S, O, w=0.0, theta=0.05):
@@ -119,18 +136,18 @@ def main():
     res["operational_invisibility"] = part2_operational_invisibility()
     res["spam_robustness"] = part3_spam_robustness()
     # figure: packing count vs scale (K_eff growth) + operational invisibility
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4.5))
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.8))
     pk = res["A3_Keff_packing"]["numerical_packing_count_vs_rel_scale"]
     grs = sorted(pk, reverse=True)
     ax[0].loglog([float(g) for g in grs], [pk[g] for g in grs], "o-")
     ax[0].set_xlabel("relative packing scale gamma_rel"); ax[0].set_ylabel("packing count K_eff")
-    ax[0].set_title(f"A3 K_eff packing (attack subspace dim r={res['A3_Keff_packing']['attack_signal_subspace_dim_r']})")
+    ax[0].set_title(f"A3 K_eff packing (r={res['A3_Keff_packing']['attack_signal_subspace_dim_r']})")
     cls = res["operational_invisibility"]["classification"]
     names = list(cls); ns = [cls[n]["Nstar"] if cls[n]["Nstar"] else 1e8 for n in names]
     ax[1].bar(names, ns, color=["C3" if v >= 1e6 else "C2" for v in ns]); ax[1].set_yscale("log")
-    ax[1].set_ylabel("N* (shots)"); ax[1].set_title("Operational invisibility (real-pulse echo): N* per direction")
+    ax[1].set_ylabel("N* (shots)"); ax[1].set_title("operational invisibility (real-pulse echo)")
     for b in [1e6]: ax[1].axhline(b, ls="--", c="gray")
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig6_realism.png"), dpi=120); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig6_realism")
     with open(os.path.join(OUT, "phase4c_results.json"), "w") as f: json.dump(res, f, indent=2, default=str)
     print("\n===== Phase-4c realism + A3 K_eff =====")
     print(" A3 K_eff: attack subspace dim r =", res["A3_Keff_packing"]["attack_signal_subspace_dim_r"],

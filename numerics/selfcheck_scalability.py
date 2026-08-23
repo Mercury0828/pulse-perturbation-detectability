@@ -21,21 +21,43 @@ import json, os, time
 import numpy as np
 OUT = os.path.join(os.path.dirname(__file__), "..", "results", "selfcheck"); os.makedirs(OUT, exist_ok=True)
 SEED = 20260628
+TIMING_REPEATS = 9   # wall-clock timings are noisy; the reported figure is the median of repeats
 I = np.eye(2, dtype=complex)
 X = np.array([[0,1],[1,0]],complex); Y = np.array([[0,-1j],[1j,0]],complex); Z = np.array([[1,0],[0,-1]],complex)
 
-# per-qubit XY4 averaging superoperator on ONE qubit's traceless Paulis -> which single-qubit axes are blinded.
-def single_qubit_xy4_kernel():
-    """A = (1/T) int Ad_{U0^dag} dt for per-qubit XY4 on one qubit, in the {X,Y,Z} basis. XY4 averages all -> ker=all."""
-    # XY4 toggling: sign pattern of each Pauli under the 4 pulses X,Y,X,Y at 1/8,3/8,5/8,7/8 (5 equal intervals).
-    # We reuse the validated result: XY4 -> ker A = su(2) (all of X,Y,Z averaged to ~0). Confirmed in a4 module.
-    return {"X": True, "Y": True, "Z": True}  # all single-qubit Paulis K-blind under per-qubit XY4
+# ---------------------------------------------------------------------- the actual toggling computation
+PAULI = {"I": I, "X": X, "Y": Y, "Z": Z}
+XY4_PULSES = [(0.125, "X"), (0.375, "Y"), (0.625, "X"), (0.875, "Y")]   # per-qubit XY4, synchronous on the support
 
-def two_local_blind(pauli_pair):
-    """A nearest-neighbor 2-local string (e.g. ZZ, XX) under per-qubit XY4 on BOTH qubits: each qubit's pulses flip
-    its factor's sign; the product's toggling sign is the product of the two -> for XY4 on both, the 2-local is
-    also averaged to ~0 (blind). (ZZ: both Z flipped by X/Y pulses -> sign pattern averages.)"""
-    return True  # 2-local strings of XY4-blinded factors are also K-blind under per-qubit XY4
+def _string_op(word, nq):
+    """The Pauli string `word` (one letter per qubit of the support) as a 2^nq matrix."""
+    out = np.array([[1.0 + 0j]])
+    for ch in word:
+        out = np.kron(out, PAULI[ch])
+    assert out.shape == (2 ** nq, 2 ** nq)
+    return out
+
+def _xy4_schedule(nq):
+    """Ideal instantaneous per-qubit XY4 applied simultaneously to every qubit of the support."""
+    return [(f, _string_op(ax * nq, nq)) for f, ax in XY4_PULSES]
+
+def toggling_average(pulses, V):
+    """K = int_0^1 U0(t)^dag V U0(t) dt for ideal instantaneous pulses.
+
+    Between pulses U0 is constant, so this is an EXACT finite sum over the segments the pulses cut the
+    window into: no time discretisation, and in particular no off-by-one at a pulse boundary, which would
+    leave a spurious residual of order 1/nseg exactly where the answer is zero."""
+    fr = sorted(pulses)
+    bounds = [0.0] + [f for f, _ in fr] + [1.0]
+    K = np.zeros_like(V)
+    U = np.eye(V.shape[0], dtype=complex)
+    for k in range(len(bounds) - 1):
+        dt = bounds[k + 1] - bounds[k]
+        if dt > 0:
+            K += dt * (U.conj().T @ V @ U)
+        if k < len(fr):
+            U = fr[k][1] @ U
+    return K
 
 def local_dictionary(n):
     """O(n) local dictionary: single-qubit X,Y,Z on each qubit + nearest-neighbor ZZ, XX."""
@@ -49,10 +71,10 @@ def local_dictionary(n):
     return d
 
 def stim_spread(nq, depth, ntrial=30, seed=SEED):
-    try:
-        import stim
-    except Exception as e:
-        return {"error": str(e)}
+    # Stim is a hard requirement here: the operator-spreading boundary is a
+    # claim the manuscript makes, so a missing dependency has to stop the run
+    # rather than silently produce an empty panel in a figure the text cites.
+    import stim
     rng = np.random.default_rng(seed); weights = []
     for _ in range(ntrial):
         c = stim.Circuit()
@@ -68,51 +90,76 @@ def stim_spread(nq, depth, ntrial=30, seed=SEED):
         weights.append(sum(1 for k in range(nq) if ev[k] != 0))
     return {"depth": depth, "mean_weight": float(np.mean(weights)), "max_weight": int(np.max(weights))}
 
-def _real_local_diagnosis_cost(qubits, nstep=40):
-    """Genuine per-perturbation cost: build a per-qubit-DD piecewise-constant schedule on the 1-2 qubit SUPPORT of
-    the perturbation (dim 2 or 4), then run the ACTUAL workflow computation for one dictionary entry: the toggling
-    integral, the restricted response matrix, and its kernel via SVD. The cost depends only on the support size
-    (1 or 2 qubits), never on the total n. Returns the kernel dimension so the call cannot be optimized away."""
-    from pdet_core import Schedule, toggling_generator, response_map, kernel_dim
+def local_diagnosis(qubits, word):
+    """Run the ACTUAL workflow computation for one dictionary entry on its 1-2 qubit support.
+
+    Builds the per-qubit XY4 schedule on the support, takes the exact toggling average of the entry's
+    own generator, and reads it out through the restricted response map. Cost depends only on the
+    support size (1 or 2 qubits), never on the total n. Returns (||K||, control_blind, dim ker M)."""
+    from pdet_core import Schedule, response_map, kernel_dim
     nq = len(qubits); d = 2 ** nq
-    def op(p, q):  # Pauli p on qubit q within the nq-qubit support
-        mats = {"I": I, "X": X, "Y": Y, "Z": Z}
-        out = np.array([[1.0 + 0j]])
-        for k in range(nq): out = np.kron(out, mats[p] if k == q else I)
-        return out
-    drift = sum(0.3 * op("Z", q) for q in range(nq))                       # static drift on the support
-    flip = sum(np.pi * nstep * op("X", q) for q in range(nq))              # pi-X refocusing within one step
-    steps = [drift + (flip if s in (nstep // 4, 3 * nstep // 4) else 0.0 * drift) for s in range(nstep)]
-    sc = Schedule(steps, dt=1.0 / nstep)
-    V = [op("Z", 0) for _ in range(nstep)]                                 # the (static) perturbation generator, per step
-    K = [toggling_generator(sc, V)]
-    def st(v): v = np.array(v, complex); v /= np.linalg.norm(v); return np.outer(v, v.conj())
+    V = _string_op(word, nq)
+    K = toggling_average(_xy4_schedule(nq), V)
+    scale = float(np.linalg.norm(V))                 # un-decoupled toggling average is V itself (T = 1)
+    knorm = float(np.linalg.norm(K))
+    blind = knorm <= 1e-9 * scale                    # ideal pulses: the twirl is exact, so this is 0 or O(1)
+
+    # the readout side, on the same support, so the timing covers the whole per-entry workflow
+    def stt(v):
+        v = np.array(v, complex); v /= np.linalg.norm(v); return np.outer(v, v.conj())
     e = np.eye(d, dtype=complex)
-    S = [st(e[i] + 1j * e[(i + 1) % d]) for i in range(d)] + [st(e[i]) for i in range(d)]
-    M = response_map(sc, K, S, [op("Z", 0)])
-    return kernel_dim(M)
+    S = [stt(e[i] + 1j * e[(i + 1) % d]) for i in range(d)] + [stt(e[i]) for i in range(d)]
+    O = [_string_op(w, nq) for w in (["Z", "X"] if nq == 1 else ["ZI", "IZ", "ZZ", "XI", "IX"])]
+    nstep = 8
+    sc = Schedule([np.zeros((d, d), complex) for _ in range(nstep)], dt=1.0 / nstep)
+    M = response_map(sc, [K], S, O)
+    return knorm, blind, kernel_dim(M)
 
 def main():
     res = {"seed": SEED, "thesis": "locality-scaled K-level diagnosis: O(n) for local dictionary under per-qubit DD"}
-    sk = single_qubit_xy4_kernel()
-    rows = {"n": [], "dict_size": [], "kernel_dim": [], "runtime_ms": []}
-    _real_local_diagnosis_cost([0]); _real_local_diagnosis_cost([0, 1])  # warm up imports/caches before timing
+    rows = {"n": [], "dict_size": [], "kernel_dim": [], "blind_1local": [], "blind_2local": [], "runtime_ms": []}
+    local_diagnosis([0], "Z"); local_diagnosis([0, 1], "ZZ")  # warm up imports/caches before timing
+    verdicts = {}
     for n in [2, 3, 4, 5, 6, 7]:
         D = local_dictionary(n)
-        t0 = time.perf_counter()
-        kdim = 0
-        for name, qubits, ptype in D:
-            # genuine per-entry diagnosis cost on the 1-2 qubit support (independent of n); summed over O(n) entries
-            _real_local_diagnosis_cost(qubits)
-            blind = (sk[ptype] if len(qubits) == 1 else two_local_blind(ptype))
-            kdim += 1 if blind else 0
-        rt = (time.perf_counter() - t0) * 1e3
-        rows["n"].append(n); rows["dict_size"].append(len(D)); rows["kernel_dim"].append(kdim); rows["runtime_ms"].append(round(rt, 2))
+        reps = []
+        for _rep in range(TIMING_REPEATS):
+            t0 = time.perf_counter()
+            kdim = b1 = b2 = 0
+            for name, qubits, ptype in D:
+                knorm, blind, _ = local_diagnosis(qubits, ptype)
+                verdicts[ptype] = {"K_norm": round(knorm, 12), "control_blind": bool(blind)}
+                kdim += 1 if blind else 0
+                if len(qubits) == 1: b1 += 1 if blind else 0
+                else: b2 += 1 if blind else 0
+            reps.append((time.perf_counter() - t0) * 1e3)
+        # the reported figure is the median over repeats, so a scheduling hiccup cannot move a published number
+        rt = float(np.median(reps))
+        rows["n"].append(n); rows["dict_size"].append(len(D)); rows["kernel_dim"].append(kdim)
+        rows["blind_1local"].append(b1); rows["blind_2local"].append(b2)
+        rows["runtime_ms"].append(round(rt, 2))
+    # A wall-clock number is not reproducible to two digits on a shared machine, and its absolute scale says
+    # more about the machine than about the algorithm. What IS reproducible, and is the actual claim, is that
+    # the cost is linear in n rather than exponential: the fitted slope is recorded for reference, and the
+    # coefficient of determination of the linear fit is the quantity the manuscript quotes.
+    _n = np.asarray(rows["n"], float); _t = np.asarray(rows["runtime_ms"], float)
+    _fit = np.polyfit(_n, _t, 1)
+    _res = _t - np.polyval(_fit, _n)
+    rows["runtime_slope_ms_per_qubit"] = round(float(_fit[0]), 2)
+    rows["runtime_linear_r2"] = round(float(1.0 - _res.dot(_res) / ((_t - _t.mean()) ** 2).sum()), 4)
+    rows["runtime_note"] = ("wall clock on one core of a commodity laptop, each point the median of "
+                            "%d repeats; the reproducible claim is the linearity, not the absolute scale"
+                            % TIMING_REPEATS)
+    res["per_direction_verdict"] = verdicts
     res["locality_scaled_kernel"] = rows
-    res["scaling_note"] = ("dict size and kernel dim both grow O(n) (3n single-qubit + 2(n-1) NN-2-local); each "
-                           "blind classification is a 1-2 qubit toggling computation INDEPENDENT of n. So the "
-                           "K-level diagnosis for LOCAL perturbations under per-qubit DD is O(n), not O(2^n). "
-                           "Under per-qubit XY4 ALL local perturbations are K-blind (a total local blind spot).")
+    res["scaling_note"] = ("dict size grows O(n) (3n single-qubit + 2(n-1) NN-2-local) and each blind "
+                           "classification is a 1-2 qubit toggling computation INDEPENDENT of n, so the K-level "
+                           "diagnosis for LOCAL perturbations under per-qubit DD is O(n), not O(2^n). The verdict "
+                           "DISCRIMINATES: synchronous per-qubit XY4 twirls every single-qubit Pauli to zero, so "
+                           "all 3n single-qubit directions are control-blind, while a nearest-neighbour 2-local "
+                           "string is invariant under the simultaneous pulse (Ad_{P x P}(Z x Z) = (+-Z) x (+-Z) = "
+                           "Z x Z) and survives the twirl -- the 2(n-1) two-local directions stay visible. That is "
+                           "the control lever being direction-specific, computed rather than assumed.")
     # operator-spreading boundary
     res["operator_spreading_boundary"] = {str(d): stim_spread(7, d) for d in [1, 2, 4, 8]}
     res["boundary_note"] = ("Entangling control spreads a local Pauli to high-weight strings: on n=7 the mean "
@@ -122,7 +169,7 @@ def main():
     # figure
     import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
     import figstyle; figstyle.apply()
-    fig, ax = plt.subplots(1, 2, figsize=(12, 3.3))
+    fig, ax = plt.subplots(1, 2, figsize=figstyle.figsize(1.0, 2.5))
     ax[0].plot(rows["n"], rows["dict_size"], "o-", label="dictionary size O(n)")
     ax[0].plot(rows["n"], rows["kernel_dim"], "s-", label="kernel dim (blind) O(n)")
     ax[0].plot(rows["n"], [2**nn for nn in rows["n"]], "k--", label="2^n (full Hilbert, for ref)")
@@ -133,10 +180,15 @@ def main():
     axr.set_ylabel("measured diagnosis runtime (ms)", color="tab:green")
     axr.tick_params(axis="y", labelcolor="tab:green"); axr.legend(loc="lower right")
     sp = res["operator_spreading_boundary"]
-    ds = [int(d) for d in sp if "mean_weight" in sp[d]]
+    ds = sorted(int(d) for d in sp if "mean_weight" in sp[d])
+    if len(ds) < 2:
+        raise RuntimeError("operator-spreading panel has %d usable depths; refusing to "
+                           "emit a figure the manuscript cites with an empty axis" % len(ds))
     ax[1].plot(ds, [sp[str(d)]["mean_weight"] for d in ds], "o-")
-    ax[1].set_xlabel("entangling circuit depth"); ax[1].set_ylabel("mean Pauli weight (initially-local, n=7)")
-    fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig_scalability.png"), dpi=120); plt.close(fig)
+    ax[1].set_xticks(ds)
+    ax[1].set_xlabel("entangling circuit depth")
+    ax[1].set_ylabel("mean Pauli weight (initially-local, n=7)")
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig_scalability")
     with open(os.path.join(OUT, "scalability_results.json"), "w") as f: json.dump(res, f, indent=2, default=str)
     print("\n===== SELF-CHECK L6: scalability (locality-scaled) =====")
     print(" n:", rows["n"]); print(" dict size:", rows["dict_size"]); print(" kernel dim:", rows["kernel_dim"])

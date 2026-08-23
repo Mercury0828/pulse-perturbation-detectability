@@ -8,7 +8,7 @@ become a detectable signal "for free"?  This script perturbs the three model kno
 named -- (a) refocusing-pulse TIMING, (b) DRAG coefficient beta, (c) cross-resonance rates --
 and reports how the kernel dimension, the per-direction margins, and the resulting N* move.
 
-Headline expected behaviour (pre-registered):
+Headline expected behaviour, frozen before the run:
   (a) a symmetric-echo control-blind Z-detuning leaves the EXACT null as the timing error grows,
       but its margin grows only ~linearly in the timing error, so N* ~ 1/error^2 stays astronomically
       large for small mismatch -> the direction is still OPERATIONALLY invisible at any realistic budget.
@@ -18,7 +18,6 @@ Headline expected behaviour (pre-registered):
       measurement BASIS, not the schedule.
 
 Run: python selfcheck_model_mismatch.py -> ../results/selfcheck/model_mismatch_results.json + figure.
-
 """
 from __future__ import annotations
 import json, os
@@ -140,7 +139,9 @@ def cr_perturbed(g_eff_scale=1.0, ct_scale=1.0, nsteps=M_.NSTEPS_2Q, T=M_.T_CR):
     dt = T / nsteps
     g_eff = (np.pi / 2) / T * g_eff_scale
     ct = 0.15 * ((np.pi / 2) / T) * ct_scale
-    return [g_eff * ZX + ct * IX for _ in range(nsteps)], dt
+    # the same H = (1/2) g_eff ZX + (1/2) g_ct IX convention models.cr_zx90 uses, so this sweep perturbs the
+    # gate the rest of the paper reports and not a differently normalized one.
+    return [0.5 * g_eff * ZX + 0.5 * ct * IX for _ in range(nsteps)], dt
 
 
 def response_2q(step_hams, dt, rich=False):
@@ -148,7 +149,10 @@ def response_2q(step_hams, dt, rich=False):
     Vs = M_.dictionary_2q(len(step_hams))
     keys = list(Vs.keys())
     K = [pc.toggling_generator(sched, Vs[k]) for k in keys]
-    S, O = M_.access_2q(rich=rich)
+    # 'rich' adds every two-local Pauli. The default here is the COMPUTATIONAL set, which is the readout the
+    # measurement-blind verdict of sec:eval-2q is stated under; the wider set exposes the direction and would
+    # make the check vacuous.
+    S, O = M_.access_2q(rich=rich, computational=not rich)
     return pc.response_map(sched, K, S, O), keys
 
 
@@ -181,17 +185,24 @@ def main():
     res["a_pulse_timing"] = part_a_timing()
     res["b_drag_coefficient"] = part_b_drag()
     res["c_cr_rates"] = part_c_cr()
+    # the pre-registered falsifier. If the control detuning stopped being measurement-blind under the
+    # computational readout the sweep would have refuted the claim it is run to support, and the module must
+    # fail rather than archive the refutation as a successful regeneration.
+    for row in res["c_cr_rates"]["sweep"]:
+        if not row["det_c_readout_blind"]:
+            raise AssertionError("model-mismatch falsifier fired: det_c is visible under the computational "
+                                 "readout at %s" % row.get("perturbation", row))
 
     # figure: suppression of the nominally control-blind Z-detuning vs refocusing-pulse timing error
     a = res["a_pulse_timing"]["sweep"]
     xs = [r["timing_error_frac"] * 100 for r in a]
     sup = [r["suppression_ratio"] for r in a]
-    fig, ax = plt.subplots(1, 1, figsize=(6.2, 3.4))
+    fig, ax = plt.subplots(1, 1, figsize=figstyle.figsize(figstyle.SINGLE_PANEL_FRAC, 2.4))
     ax.semilogy(xs, sup, "o-", color="C3")
     ax.set_xlabel("refocusing-pulse timing error (% of window)")
     ax.set_ylabel("suppression of the\ncontrol-blind $Z$-detuning ($\\times$)")
     ax.grid(True, which="both", alpha=0.3)
-    fig.savefig(os.path.join(OUT, "fig_model_mismatch.png"), dpi=130, bbox_inches="tight"); plt.close(fig)
+    fig.tight_layout(); figstyle.save(fig, OUT, "fig_model_mismatch")
 
     with open(os.path.join(OUT, "model_mismatch_results.json"), "w") as f:
         json.dump(res, f, indent=2, default=str)

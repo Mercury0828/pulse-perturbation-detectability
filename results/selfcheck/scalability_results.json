@@ -1,6 +1,28 @@
 {
   "seed": 20260628,
   "thesis": "locality-scaled K-level diagnosis: O(n) for local dictionary under per-qubit DD",
+  "per_direction_verdict": {
+    "X": {
+      "K_norm": 0.0,
+      "control_blind": true
+    },
+    "Y": {
+      "K_norm": 0.0,
+      "control_blind": true
+    },
+    "Z": {
+      "K_norm": 0.0,
+      "control_blind": true
+    },
+    "ZZ": {
+      "K_norm": 2.0,
+      "control_blind": false
+    },
+    "XX": {
+      "K_norm": 2.0,
+      "control_blind": false
+    }
+  },
   "locality_scaled_kernel": {
     "n": [
       2,
@@ -19,23 +41,42 @@
       33
     ],
     "kernel_dim": [
-      8,
-      13,
+      6,
+      9,
+      12,
+      15,
       18,
-      23,
-      28,
-      33
+      21
+    ],
+    "blind_1local": [
+      6,
+      9,
+      12,
+      15,
+      18,
+      21
+    ],
+    "blind_2local": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
     ],
     "runtime_ms": [
-      32.66,
-      52.02,
-      73.09,
-      97.94,
-      108.75,
-      136.23
-    ]
+      8.5,
+      14.83,
+      19.9,
+      25.58,
+      32.28,
+      37.98
+    ],
+    "runtime_slope_ms_per_qubit": 5.87,
+    "runtime_linear_r2": 0.9988,
+    "runtime_note": "wall clock on one core of a commodity laptop, each point the median of 9 repeats; the reproducible claim is the linearity, not the absolute scale"
   },
-  "scaling_note": "dict size and kernel dim both grow O(n) (3n single-qubit + 2(n-1) NN-2-local); each blind classification is a 1-2 qubit toggling computation INDEPENDENT of n. So the K-level diagnosis for LOCAL perturbations under per-qubit DD is O(n), not O(2^n). Under per-qubit XY4 ALL local perturbations are K-blind (a total local blind spot).",
+  "scaling_note": "dict size grows O(n) (3n single-qubit + 2(n-1) NN-2-local) and each blind classification is a 1-2 qubit toggling computation INDEPENDENT of n, so the K-level diagnosis for LOCAL perturbations under per-qubit DD is O(n), not O(2^n). The verdict DISCRIMINATES: synchronous per-qubit XY4 twirls every single-qubit Pauli to zero, so all 3n single-qubit directions are control-blind, while a nearest-neighbour 2-local string is invariant under the simultaneous pulse (Ad_{P x P}(Z x Z) = (+-Z) x (+-Z) = Z x Z) and survives the twirl -- the 2(n-1) two-local directions stay visible. That is the control lever being direction-specific, computed rather than assumed.",
   "operator_spreading_boundary": {
     "1": {
       "depth": 1,

@@ -7,16 +7,21 @@
       "det_t"
     ],
     "attack_signal_subspace_dim_r": 3,
-    "sigma_max": 8.492,
-    "sigma_min_attack": 5.412,
+    "dictionary_coherence_rho": 0.0,
+    "readout": "computational {ZI,IZ,ZZ}",
+    "dim_span_benign": 1,
+    "packing_exponent_expected": 2,
+    "packing_exponent_fitted": 1.838,
+    "sigma_max": 11.922,
+    "sigma_min_attack": 5.367,
     "numerical_packing_count_vs_rel_scale": {
-      "0.5": 32,
-      "0.3": 89,
-      "0.2": 188,
-      "0.1": 637
+      "0.5": 31,
+      "0.3": 90,
+      "0.2": 184,
+      "0.1": 609
     },
-    "log_Keff_bound": "~ r*log(sigma/gamma) = 3*log(sigma/gamma)",
-    "verdict": "attack-signal subspace dim r=3 (a handful). Composite penalty log K_eff ~ r*log(sigma/gamma) is a SMALL factor; the two-point sharp N=V(z+z)^2/gamma^2 essentially governs for a realistic finite dictionary. Packing counts (a few hundred at gamma_rel=0.1) match K_eff ~ (1/gamma_rel)^r with small r."
+    "log_Keff_bound": "~ (r-1)*log(sigma/gamma) = 2*log(sigma/gamma)",
+    "verdict": "attack-signal subspace dim r=3; the packing lives on its unit sphere, so K_eff ~ (1/gamma_rel)^(r-1) with r-1=2 (fitted exponent 1.84). Composite penalty log K_eff ~ (r-1)*log(sigma/gamma) is a SMALL factor; the two-point sharp N=V(z+z)^2/gamma^2 essentially governs for a realistic finite dictionary."
   },
   "operational_invisibility": {
     "budgets": [
@@ -30,7 +35,7 @@
     "classification": {
       "X(amp)": {
         "margin": 0.17667,
-        "Nstar": 1040.193561743719,
+        "Nstar": 1040.1935617437186,
         "invisible_at_budget": {
           "1e3": true,
           "1e4": false,
